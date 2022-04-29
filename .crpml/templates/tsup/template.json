@@ -1,0 +1,55 @@
+{
+  "$schema": "https://raw.githubusercontent.com/RadiantGuild/Tools.CRPML/master/schemas/template.json",
+  "displayName": "tsup",
+  "description": "tsup bundler (no dynamic imports; fast)",
+  "variants": {
+    "base": {
+      "displayName": "Base",
+      "required": true,
+      "scripts": ["build", "watch"],
+      "files": [
+        "package.json",
+        "tsup.config.ts",
+        "tsconfig.json",
+        "src/index.ts"
+      ]
+    },
+    "logger": {
+      "displayName": "With Logger",
+      "description": "Adds support for logging with Pino",
+      "files": [
+        "package.json"
+      ]
+    },
+    "node": {
+      "displayName": "With NodeJS",
+      "description": "Adds typings for NodeJS",
+      "files": [
+        "package.json"
+      ]
+    },
+    "plugin": {
+      "displayName": "RadiantPM Plugin",
+      "description": "Adds @radiantpm/plugin-utils and a small boilerplate",
+      "files": [
+        "package.json",
+        "src/index.ts"
+      ]
+    },
+    "runtime": {
+      "displayName": "RadiantPM Runtime",
+      "description": "Adds @radiantpm/runtime-bootstrap",
+      "files": [
+        "package.json"
+      ]
+    }
+  },
+  "files": {
+    "package.json": {
+      "mergeMethod": "json"
+    },
+    "src/index.ts": {
+      "mergeMethod": "last"
+    }
+  }
+}

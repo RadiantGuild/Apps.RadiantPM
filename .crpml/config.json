@@ -1,0 +1,5 @@
+{
+  "$schema": "../packages/create-rpm-library/schemas/config.json",
+  "outDir": "packages",
+  "scope": "@radiantpm"
+}

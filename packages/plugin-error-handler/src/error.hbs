@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{num}} {{name}}</title>
+    <style>
+        footer {
+            display: flex;
+            font-size: 0.8rem;
+            gap: 15px;
+        }
+
+        footer p:not(:last-child)::after {
+            content: "·";
+            padding-left: 15px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>{{num}} {{name}}</h1>
+    {{{description}}}
+</main>
+<hr />
+<footer>
+    {{#each versions}}
+        <p>
+            <strong>{{this.name}}</strong>:
+            <code>{{this.version}}</code>
+        </p>
+    {{/each}}
+</footer>
+</body>
+</html>

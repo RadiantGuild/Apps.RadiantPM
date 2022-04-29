@@ -1,0 +1,11 @@
+{{#if lastOtherMethod}}
+    <p>Did you mean to to send a request with {{#if otherMethods}}a{{else}}the{{/if}} {{#each otherMethods}}<code>{{this}}</code>, {{/each}}{{#if otherMethods}} or {{/if}}<code>{{lastOtherMethod}}</code> HTTP method?</p>
+    <hr />
+{{/if}}
+
+<p>An error occurred in a middleware{{#if middlewareName}} <code>{{middlewareName}}</code>{{/if}} from
+    <code>{{middlewarePluginName}}</code>:</p>
+<pre><code>{{{stackTrace}}}</code></pre>
+<p>Click on a path to open it in your editor.</p>
+<p>Note: only the error&rsquo;s message will be shown in production. If you want to hide it, set <code>error.isMessageSensitive</code>
+    to <code>true</code>.</p>

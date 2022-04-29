@@ -1,0 +1,29 @@
+{
+  "name": "@radiantpm/serve-static",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "watch": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.1",
+    "@types/node": "^14.17",
+    "@types/pino": "^6",
+    "pino": "^7",
+    "tsup": "^5.6.0",
+    "typescript": "^4.6"
+  },
+  "dependencies": {
+    "@radiantpm/log": "workspace:^0.1.0",
+    "@radiantpm/plugin-error-handler": "workspace:^0.1.0",
+    "@radiantpm/plugin-types": "workspace:^0.1.0",
+    "file-type": "^17.0.0",
+    "mime-types": "^2.1.34"
+  },
+  "peerDependencies": {
+    "pino": "^7"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@radiantpm/log",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "peerDependencies": {
+    "pino": "^6.13.3"
+  },
+  "devDependencies": {
+    "@types/pino": "^6.3.11",
+    "pino": "^6.13.3"
+  }
+}

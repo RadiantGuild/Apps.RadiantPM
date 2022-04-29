@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "@radiantpm/plugin-local-storage": {
+      "type": "object",
+      "properties": {
+        "hostPath": {
+          "type": "string",
+          "description": "The physical path to store the files at"
+        },
+        "baseUrl": {
+          "type": "string",
+          "description": "The base URL for requests",
+          "default": "/-/storage/",
+          "pattern": "^\/",
+          "nullable": true
+        }
+      },
+      "required": [
+        "hostPath"
+      ]
+    },
+    "@radiantpm/plugin-standard-backend-config": {
+      "type": "object",
+      "required": [
+        "authManager",
+        "storageManagers"
+      ],
+      "properties": {
+        "database": {
+          "type": "string",
+          "description": "The name of the plugin that provides a database"
+        },
+        "authManager": {
+          "type": "string",
+          "description": "The name of the plugin that provides authentication"
+        },
+        "storageManagers": {
+          "type": "object",
+          "required": [
+            "pkg",
+            "static"
+          ],
+          "properties": {
+            "pkg": {
+              "type": "string",
+              "description": "The name of the plugin that provides package storage"
+            },
+            "static": {
+              "type": "string",
+              "description": "The name of the plugin that provides static storage"
+            }
+          }
+        }
+      }
+    },
+    "@radiantpm/plugin-standard-frontend": {
+      "type": "object",
+      "required": [
+        "favicon",
+        "logo",
+        "logoText"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "gzip": {
+          "type": "boolean",
+          "default": false
+        },
+        "favicon": {
+          "type": "object",
+          "required": [
+            "light",
+            "dark",
+            "default"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "light": {
+              "type": "string",
+              "pattern": "[a-z.-]+"
+            },
+            "dark": {
+              "type": "string",
+              "pattern": "[a-z.-]+"
+            },
+            "default": {
+              "type": "string",
+              "pattern": "[a-z.-]+"
+            }
+          }
+        },
+        "logo": {
+          "type": "object",
+          "required": [
+            "light",
+            "dark"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "light": {
+              "type": "string",
+              "pattern": "[a-z.-]+"
+            },
+            "dark": {
+              "type": "string",
+              "pattern": "[a-z.-]+"
+            }
+          }
+        },
+        "logoText": {
+          "type": "object",
+          "required": [
+            "light",
+            "dark"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "light": {
+              "type": "string",
+              "pattern": "[a-z.-]+"
+            },
+            "dark": {
+              "type": "string",
+              "pattern": "[a-z.-]+"
+            }
+          }
+        }
+      }
+    },
+    "@radiantpm/plugin-knex-database": {
+      "type": "object",
+      "required": [
+        "db"
+      ],
+      "properties": {
+        "db": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "client",
+                "path"
+              ],
+              "properties": {
+                "client": {
+                  "type": "string",
+                  "const": "sqlite"
+                },
+                "path": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "client",
+                "connection"
+              ],
+              "properties": {
+                "client": {
+                  "type": "string",
+                  "enum": [
+                    "postgresql",
+                    "mysql"
+                  ]
+                },
+                "connection": {
+                  "type": "object",
+                  "required": [
+                    "host",
+                    "port",
+                    "user",
+                    "password",
+                    "database"
+                  ],
+                  "properties": {
+                    "host": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "integer"
+                    },
+                    "user": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    },
+                    "database": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "@radiantpm/plugin-github-auth": {
+      "type": "object",
+      "required": [
+        "accessToken",
+        "feedCreators"
+      ],
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "description": "Github access token (no scopes required) to use for auth checks for users that aren't logged in"
+        },
+        "feedCreators": {
+          "type": "array",
+          "description": "Github logins for users who can create new feeds",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "title": "configs",
+  "description": "Specifies the configuration for each plugin."
+}
