@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "baseUrl": "./src",
+    "paths": {
+      "~/*": ["/~"],
+      "~package.json": ["../package.json"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["**/node_modules", "**/.*/"]
+}

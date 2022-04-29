@@ -1,0 +1,44 @@
+{
+  "name": "@radiantpm/stitches-extract",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./plugin": {
+      "import": "./dist/plugin/index.js",
+      "types": "./dist/plugin/index.d.ts"
+    },
+    "./runtime": {
+      "import": "./dist/runtime/index.js",
+      "types": "./dist/runtime/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "watch": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/babel__generator": "^7.6.4",
+    "@types/babel__traverse": "^7.14.2",
+    "@types/estree": "^0.0.51",
+    "@types/object-hash": "^2.2.1",
+    "react": "^17 || ^18",
+    "tsup": "^5.6.0",
+    "typescript": "^4.6",
+    "vite": "^2.8"
+  },
+  "peerDependencies": {
+    "react": "^17 || ^18",
+    "vite": "^2.8"
+  },
+  "dependencies": {
+    "@babel/generator": "^7.17.7",
+    "@babel/parser": "^7.17.7",
+    "@babel/traverse": "^7.17.3",
+    "@babel/types": "^7.17.0",
+    "@stitches/stringify": "^1.2.7"
+  }
+}
