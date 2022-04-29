@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@radiantpm/log": "workspace:^0.1.0",
+    "@radiantpm/plugin-error-handler": "workspace:^0.1.0",
     "@radiantpm/plugin-types": "workspace:^0.1.0",
     "@radiantpm/plugin-utils": "workspace:^0.1.0"
   },
