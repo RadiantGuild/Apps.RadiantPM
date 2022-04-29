@@ -37,7 +37,8 @@ let validationPlugin: ValidationPlugin;
 function shouldHandle(req: HttpRequest) {
     return (
         !req.url.pathname.startsWith("/-/") &&
-        !req.url.pathname.startsWith("/api/")
+        !req.url.pathname.startsWith("/api/") &&
+        !req.url.pathname.startsWith("/.")
     );
 }
 
