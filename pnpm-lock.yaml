@@ -59,6 +59,7 @@ importers:
       '@radiantpm/plugin-github-auth': workspace:^0.1.0
       '@radiantpm/plugin-knex-database': workspace:^0.1.0
       '@radiantpm/plugin-local-storage': workspace:^0.1.0
+      '@radiantpm/plugin-npm': workspace:^0.1.0
       '@radiantpm/plugin-standard-frontend': workspace:^0.1.0
       '@radiantpm/plugin-standard-validator': workspace:^0.1.0
     dependencies:
@@ -68,6 +69,7 @@ importers:
       '@radiantpm/plugin-github-auth': link:../../../packages/plugin-github-auth
       '@radiantpm/plugin-knex-database': link:../../../packages/plugin-knex-database
       '@radiantpm/plugin-local-storage': link:../../../packages/plugin-local-storage
+      '@radiantpm/plugin-npm': link:../../../packages/plugin-npm
       '@radiantpm/plugin-standard-frontend': link:../../../packages/plugin-standard-frontend
       '@radiantpm/plugin-standard-validator': link:../../../packages/plugin-standard-validator
 
@@ -285,6 +287,7 @@ importers:
   packages/plugin-npm:
     specifiers:
       '@radiantpm/log': workspace:^0.1.0
+      '@radiantpm/plugin-error-handler': workspace:^0.1.0
       '@radiantpm/plugin-types': workspace:^0.1.0
       '@radiantpm/plugin-utils': workspace:^0.1.0
       '@types/pino': ^6
@@ -293,6 +296,7 @@ importers:
       typescript: ^4.6
     dependencies:
       '@radiantpm/log': link:../log
+      '@radiantpm/plugin-error-handler': link:../plugin-error-handler
       '@radiantpm/plugin-types': link:../plugin-types
       '@radiantpm/plugin-utils': link:../plugin-utils
     devDependencies:
