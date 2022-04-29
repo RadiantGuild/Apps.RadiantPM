@@ -1,0 +1,36 @@
+{
+  "name": "@radiantpm/plugin-knex-database",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "watch": "tsup --watch",
+    "migrate": "node dist/scripts/migrate.js"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.4.2",
+    "@types/node": "^14.17",
+    "@types/pino": "^6",
+    "@types/uuid": "^8.3.4",
+    "pino": "^7",
+    "tsup": "^5.6.0",
+    "typescript": "^4.6"
+  },
+  "dependencies": {
+    "@radiantpm/log": "workspace:^0.1.0",
+    "@radiantpm/plugin-types": "workspace:^0.1.0",
+    "@radiantpm/plugin-utils": "workspace:^0.1.0",
+    "better-sqlite3": "^7.5.0",
+    "knex": "^1.0.3",
+    "mysql2": "^2.3.3",
+    "oracledb": "^5.3.0",
+    "pg": "^8.7.3",
+    "tedious": "^14.3.0",
+    "uuid": "^8.3.2"
+  },
+  "peerDependencies": {
+    "pino": "^7"
+  }
+}

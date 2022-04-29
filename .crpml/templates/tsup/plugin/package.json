@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@radiantpm/plugin-types": "workspace:^0.1.0",
+    "@radiantpm/plugin-utils": "workspace:^0.1.0"
+  }
+}

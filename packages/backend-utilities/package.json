@@ -1,0 +1,26 @@
+{
+  "name": "@radiantpm/backend-utilities",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -wc"
+  },
+  "dependencies": {
+    "@radiantpm/log": "workspace:^0.1.0",
+    "@radiantpm/plugin-types": "workspace:^0.1.0",
+    "ajv": "^8.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^14.17.21",
+    "@types/pino": "^6.3.11",
+    "pino": "^6.13.3",
+    "rollup": "^2.59.0",
+    "rollup-plugin-ts": "^2.0.4"
+  },
+  "peerDependencies": {
+    "pino": "^6.13.3"
+  }
+}

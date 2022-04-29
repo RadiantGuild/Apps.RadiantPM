@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "esnext",
+    "target": "esnext",
+    "lib": ["dom", "DOM.Iterable", "esnext"],
+    "moduleResolution": "node",
+    "jsx": "react-jsxdev",
+    "sourceMap": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "allowSyntheticDefaultImports": true,
+    "strictBindCallApply": true,
+    "resolveJsonModule": true
+  }
+}

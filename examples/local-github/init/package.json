@@ -1,0 +1,17 @@
+{
+  "name": "local-gitlab",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js | pino-pretty"
+  },
+  "dependencies": {
+    "@radiantpm/runtime-bootstrap": "workspace:*",
+    "@radiantpm/runtime-standard-backend": "workspace:*",
+    "@radiantpm/runtime-standard-plugin-loader": "workspace:*",
+    "@radiantpm/runtime-standard-plugin-selector": "workspace:*"
+  },
+  "devDependencies": {
+    "pino-pretty": "^7.6.0"
+  }
+}

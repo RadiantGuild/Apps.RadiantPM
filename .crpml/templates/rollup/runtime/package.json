@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@radiantpm/runtime-bootstrap": "workspace:*",
+    "@radiantpm/plugin-types": "workspace:*"
+  }
+}

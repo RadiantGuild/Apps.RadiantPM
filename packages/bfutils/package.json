@@ -1,0 +1,35 @@
+{
+  "name": "@radiantpm/bfutils",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "watch": "tsup --watch",
+    "test": "run-s test:build test:run",
+    "test:watch": "npm-run-all -s test:build -p test:build:watch test:run:watch",
+    "test:build": "tsup --env.TEST=1",
+    "test:build:watch": "tsup --env.TEST=1 --watch",
+    "test:run": "ava src",
+    "test:run:watch": "ava --watch --fail-fast src"
+  },
+  "ava": {
+    "typescript": {
+      "rewritePaths": {
+        "src/": "tmp/tests/"
+      },
+      "compile": false
+    }
+  },
+  "devDependencies": {
+    "@ava/typescript": "^3.0.1",
+    "ava": "^4.0.1",
+    "npm-run-all": "^4.1.5",
+    "tsup": "^5.11.13",
+    "typescript": "^4.6"
+  },
+  "dependencies": {
+    "@radiantpm/plugin-utils": "workspace:^0.1.0"
+  }
+}

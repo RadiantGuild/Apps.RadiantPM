@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@radiantpm/log": "workspace:^0.1.0"
+  },
+  "devDependencies": {
+    "@types/pino": "^6",
+    "pino": "^7"
+  },
+  "peerDependencies": {
+    "pino": "^7"
+  }
+}
