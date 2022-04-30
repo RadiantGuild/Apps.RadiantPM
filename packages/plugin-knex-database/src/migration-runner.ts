@@ -583,51 +583,10 @@ interface CreateMigratorParam<
     down: Down;
 }
 
-type ColumnActionsWithNames<Names extends string> =
-    // create needs to use tables that don't already exist, but unfortunately
-    // you can't express that in TS typings so the types have to be a bit looser
-    | CreateColumn<string, DataType>
-    | DeleteColumn<Names>
-    | RenameColumn<Names, string>
-    // note: column name here has the same issue as above
-    | CreatePrimaryKey<
-          Names extends `${PkPrefix}${infer Name}` ? Name : never,
-          string[]
-      >
-    | DeletePrimaryKey<Names extends `${PkPrefix}${infer Name}` ? Name : never>
-    // note: column and table name here has the same issue as above
-    | CreateForeignKey<
-          Names extends `${FkPrefix}${infer Name}` ? Name : never,
-          Record<string, string>,
-          string
-      >
-    | DeleteForeignKey<Names extends `${FkPrefix}${infer Name}` ? Name : never>;
-
-type MergeTableFollowingSchema<
-    Schema extends Record<string, Record<string, unknown>>
-> = {
-    [TableName in Cast<keyof Schema, string>]: MergeTable<
-        TableName,
-        readonly ColumnActionsWithNames<Cast<keyof Schema[TableName], string>>[]
-    >;
-}[Cast<keyof Schema, string>];
-
-type TableActionFollowingSchema<
-    Schema extends Record<string, Record<string, unknown>>
-> =
-    | CreateTable<Cast<keyof Schema, string>, DefaultCreateColumns>
-    | MergeTableFollowingSchema<Schema>
-    | DeleteTable<Cast<keyof Schema, string>>
-    | RenameTable<Cast<keyof Schema, string>, string>;
-
-type TableActionsFollowingSchema<
-    Schema extends Record<string, Record<string, unknown>>
-> = readonly TableActionFollowingSchema<Schema>[];
-
 export function createMigrator<
     Name extends string,
     Up extends DefaultTableActions,
-    Down extends TableActionsFollowingSchema<StaticTables<Up>>
+    Down extends DefaultTableActions
 >(
     name: Name,
     {up, down}: CreateMigratorParam<Up, Down>

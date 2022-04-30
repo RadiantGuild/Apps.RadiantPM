@@ -129,7 +129,7 @@ function createPlugin(db: Knex) {
 
             return db("packages")
                 .where("id", id)
-                .first("slug", "name", "description");
+                .first("slug", "name", "description", "repository");
         },
 
         async getPackageIdFromSlug(
