@@ -5,6 +5,8 @@ import {
     AuthenticationField,
     AuthenticationListValidResponse,
     AuthenticationLoginChangedResponse,
+    DatabasePlugin,
+    EnvironmentMetadata,
     MiddlewareError,
     PluginExport,
     Scope
@@ -33,6 +35,8 @@ function getErrorMessage(err: unknown): string {
         return "Internal server error";
     }
 }
+
+let dbPlugin: DatabasePlugin;
 
 class GithubAuthPlugin implements AuthPlugin {
     private static readonly defaultOctokitOptions: Exclude<
@@ -76,7 +80,7 @@ class GithubAuthPlugin implements AuthPlugin {
     ): Promise<AuthenticationCheckResponse> {
         const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
-        const context = new AuthContext(octokit, authState);
+        const context = new AuthContext(octokit, dbPlugin, authState);
 
         try {
             return await switchedScopeHandler.check(
@@ -98,7 +102,7 @@ class GithubAuthPlugin implements AuthPlugin {
     ): Promise<AuthenticationListValidResponse> {
         const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
-        const context = new AuthContext(octokit, authState);
+        const context = new AuthContext(octokit, dbPlugin, authState);
 
         try {
             return await switchedScopeHandler.listValid(
@@ -252,6 +256,9 @@ const pluginExport: PluginExport<Configuration, true> = {
     },
     init(config) {
         return createAuthPlugin(new GithubAuthPlugin(config));
+    },
+    onMetaLoaded(meta: EnvironmentMetadata) {
+        dbPlugin = meta.selectedPlugins.database;
     }
 };
 

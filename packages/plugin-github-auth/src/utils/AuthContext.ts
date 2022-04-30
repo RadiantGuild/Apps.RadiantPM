@@ -1,8 +1,13 @@
 import {Octokit} from "@octokit/rest";
+import {DatabasePlugin} from "@radiantpm/plugin-types";
 import {AuthState} from "~/types/AuthState";
 
 export default class AuthContext {
-    constructor(readonly octokit: Octokit, readonly authState: AuthState) {}
+    constructor(
+        readonly octokit: Octokit,
+        readonly db: DatabasePlugin,
+        readonly authState: AuthState
+    ) {}
 
     get gh(): Octokit["rest"] {
         return this.octokit.rest;

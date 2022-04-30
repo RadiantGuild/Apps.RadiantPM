@@ -17,6 +17,7 @@ interface FeedCreateScope {
 
 interface PackageViewScope {
     kind: "package.view";
+    feedSlug: string;
     slug: string;
 }
 
