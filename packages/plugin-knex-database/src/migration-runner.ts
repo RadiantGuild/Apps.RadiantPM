@@ -801,6 +801,11 @@ export async function runMigrations<Migrators extends DefaultMigratorArray>(
         allBefore(migrations, ({name}) => name === currentMigration?.name)
     ).reverse();
 
+    if (migrationsToRun.length === 0) {
+        logger.trace("No migrations are needed");
+        return;
+    }
+
     const merged = mergeMigrations(
         migrationsToRun,
         upTo
