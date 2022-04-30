@@ -812,7 +812,9 @@ export async function runMigrations<Migrators extends DefaultMigratorArray>(
         await knex<{name: string}>("__migrations").update(
             "name",
             newMigrationName
-        );
+        ).where({
+            name: currentMigration.name
+        });
     } else {
         await knex<{name: string}>("__migrations").insert({name: newMigrationName})
     }
