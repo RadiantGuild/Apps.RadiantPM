@@ -1,11 +1,13 @@
 import assert from "assert";
+import {fillUrl} from "@radiantpm/bfutils";
 import {createLogger} from "@radiantpm/log";
 import HttpError from "@radiantpm/plugin-error-handler/http-error";
 import {
     AuthenticationPlugin,
     DatabasePlugin,
     HttpRequest,
-    PluginExport
+    PluginExport,
+    StoragePlugin
 } from "@radiantpm/plugin-types";
 import {
     createRouteMiddlewarePlugin,
@@ -20,6 +22,7 @@ interface CouchLoginBody {
 
 let authPlugin: AuthenticationPlugin;
 let dbPlugin: DatabasePlugin;
+let pkgStoragePlugin: StoragePlugin;
 
 const logger = createLogger("plugin-npm");
 
@@ -69,6 +72,7 @@ const pluginExport: PluginExport<never, false> = {
     onMetaLoaded(meta) {
         authPlugin = meta.selectedPlugins.authentication;
         dbPlugin = meta.selectedPlugins.database;
+        pkgStoragePlugin = meta.selectedPlugins.storage.pkg;
     },
 
     init() {
@@ -204,6 +208,89 @@ const pluginExport: PluginExport<never, false> = {
                             "Package does not exist or you don't have permission to see it"
                         );
                     }
+
+                    // TODO: Test that this works
+
+                    const pkg = await dbPlugin.getPackageFromId(packageId);
+
+                    const simpleVersions =
+                        await dbPlugin.listVersionsFromPackage(packageId);
+
+                    const versions = await Promise.all(
+                        simpleVersions.map(async ({slug}) => {
+                            const id = await dbPlugin.getVersionId(
+                                packageId,
+                                slug
+                            );
+                            assert(
+                                id,
+                                "Package has version but version does not exist"
+                            );
+                            return await dbPlugin.getVersionFromId(id);
+                        })
+                    );
+
+                    const distTags = Object.fromEntries(
+                        versions.flatMap(version =>
+                            version.tags.map(tag => [tag, version.slug])
+                        )
+                    );
+
+                    const versionObjects = Object.fromEntries(
+                        versions.map(version => {
+                            const packageJsonObj = JSON.parse(version.metafile);
+
+                            const filledAssetUrl = fillUrl(
+                                pkgStoragePlugin.assetUrl,
+                                {
+                                    category: "pkg",
+                                    id: version.assetHash
+                                }
+                            );
+
+                            return [
+                                version.slug,
+                                {
+                                    ...packageJsonObj,
+                                    dist: {
+                                        tarball: filledAssetUrl
+                                    }
+                                }
+                            ];
+                        })
+                    );
+
+                    const versionCreationTimes = Object.fromEntries(
+                        versions.flatMap(version => {
+                            const date = version.creationDate.toUTCString();
+
+                            return [
+                                [version.slug, date],
+                                ...version.tags.map(tag => [tag, date])
+                            ];
+                        })
+                    );
+
+                    const latestVersion =
+                        versions.find(ver => ver.slug === distTags.latest) ??
+                        versions.at(-1);
+
+                    assert(
+                        latestVersion,
+                        "Package does not have a latest version"
+                    );
+
+                    const baseInfo = {
+                        description: pkg.description,
+                        readme: latestVersion.readme
+                    };
+
+                    await setJson(ctx.res, 200, {
+                        ...baseInfo,
+                        "dist-tags": distTags,
+                        versions: versionObjects,
+                        time: versionCreationTimes
+                    });
                 }
             )
         ];
