@@ -235,7 +235,7 @@ function createPlugin(db: Knex) {
             return {
                 slug,
                 description,
-                creationDate: creation_date,
+                creationDate: new Date(creation_date),
                 assetHash: asset_hash,
                 readme,
                 readmeType: readme_type,
