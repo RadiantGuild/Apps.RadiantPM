@@ -5,7 +5,7 @@ import HttpError from "@radiantpm/plugin-error-handler/http-error";
 import {
     AuthenticationPlugin,
     DatabasePlugin,
-    HttpRequest,
+    HttpRequest, PackageHandlerPlugin,
     PluginExport,
     StoragePlugin
 } from "@radiantpm/plugin-types";
@@ -87,6 +87,24 @@ function getNpmAccessToken(req: HttpRequest) {
     return token;
 }
 
+const handlerPlugin: PackageHandlerPlugin = {
+    type: "package-handler",
+    packageType: "npm",
+    feedSlugMatches(packageName: string, feedSlug: string) {
+        const {scope} = parsePackageName(packageName);
+        if (!scope) return false;
+
+        // TODO support more conversions
+
+        return scope === feedSlug.toLowerCase();
+    },
+    getPackageName(packageName: string) {
+        const {name} = parsePackageName(packageName);
+        if (!name) throw new Error("Invalid package name");
+        return name;
+    }
+};
+
 const pluginExport: PluginExport<never, false> = {
     configIsRequired: false,
 
@@ -98,23 +116,7 @@ const pluginExport: PluginExport<never, false> = {
 
     init() {
         return [
-            {
-                type: "package-handler",
-                packageType: "npm",
-                feedSlugMatches(packageName: string, feedSlug: string) {
-                    const {scope} = parsePackageName(packageName);
-                    if (!scope) return false;
-
-                    // TODO support more conversions
-
-                    return scope === feedSlug.toLowerCase();
-                },
-                getPackageName(packageName: string) {
-                    const {name} = parsePackageName(packageName);
-                    if (!name) throw new Error("Invalid package name");
-                    return name;
-                }
-            },
+            handlerPlugin,
             createRouteMiddlewarePlugin(
                 "PUT /-/npm/[feed_slug]/-/user/[user_id]",
                 async (ctx: RoutedRequestContext) => {
@@ -195,7 +197,7 @@ const pluginExport: PluginExport<never, false> = {
                         );
                     }
 
-                    if (scope !== feedSlug) {
+                    if (!handlerPlugin.feedSlugMatches(packageSlug, feedSlug)) {
                         throw new HttpError(
                             400,
                             "Scope does not match the feed slug"
@@ -367,7 +369,7 @@ const pluginExport: PluginExport<never, false> = {
                         );
                     }
 
-                    if (scope !== feedSlug) {
+                    if (handlerPlugin.feedSlugMatches(packageSlug, feedSlug)) {
                         throw new HttpError(
                             400,
                             "Scope does not match the feed slug"
@@ -413,7 +415,7 @@ const pluginExport: PluginExport<never, false> = {
 
                     const pushRequest = await getJson<PushRequest>(ctx.req);
 
-                    if (Object.keys(pushRequest.versions).length > 0) {
+                    if (Object.keys(pushRequest.versions).length !== 1) {
                         throw new HttpError(
                             400,
                             "Multiple version uploads is not supported"
