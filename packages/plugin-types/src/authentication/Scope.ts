@@ -21,10 +21,17 @@ interface PackageViewScope {
     slug: string;
 }
 
+interface PackageUpdateScope {
+    kind: "package.update";
+    feedSlug: string;
+    slug: string;
+}
+
 interface PackageCreateScope {
     kind: "package.create";
     feedSlug: string;
     slug: string;
+    repository?: string;
 }
 
 type Scopes =
@@ -32,6 +39,7 @@ type Scopes =
     | FeedViewScope
     | FeedCreateScope
     | PackageViewScope
+    | PackageUpdateScope
     | PackageCreateScope;
 
 type Scope<Filter extends Scopes["kind"] = Scopes["kind"]> = Extract<
@@ -46,6 +54,7 @@ const validScopeKinds: ReadonlySet<Scope["kind"]> = new Set<Scope["kind"]>([
     "feed.view",
     "feed.create",
     "package.view",
+    "package.update",
     "package.create"
 ]);
 

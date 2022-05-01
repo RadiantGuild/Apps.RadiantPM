@@ -376,7 +376,7 @@ const pluginExport: PluginExport<never, false> = {
                     const canCreatePackage = await authPlugin.check(
                         accessToken,
                         {
-                            kind: "package.create",
+                            kind: "package.update",
                             feedSlug,
                             slug: packageSlug
                         }

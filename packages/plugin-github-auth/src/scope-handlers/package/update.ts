@@ -3,10 +3,10 @@ import parseGithubUrl from "parse-github-url";
 import {Parameters} from "../Parameters";
 
 export function register(handler: SwitchedScopeHandler<Parameters>): void {
-    handler.register("package.create", {
-        async check({slug, feedSlug, repository}, cfg, ctx) {
+    handler.register("package.update", {
+        async check({slug, feedSlug}, cfg, ctx) {
             try {
-                // check if the user can push to a repo with the name from the slug
+                // check if the user can see a repo with the name from the slug
                 const repo = await ctx.gh.repos.get({
                     owner: feedSlug,
                     repo: slug
@@ -23,13 +23,35 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                     };
                 }
             } catch {
-                // check if the user can push to a repo with the name from the repository field
+                // check if the user can see the repository specified in the package info
 
+                const feedId = await ctx.db.getFeedIdFromSlug(feedSlug);
+
+                if (!feedId) {
+                    return {
+                        success: false,
+                        errorMessage: "Feed does not exist"
+                    };
+                }
+
+                const packageId = await ctx.db.getPackageIdFromSlug(
+                    feedId,
+                    slug
+                );
+
+                if (!packageId) {
+                    return {
+                        success: false,
+                        errorMessage: "Package does not exist"
+                    };
+                }
+
+                const {repository} = await ctx.db.getPackageFromId(packageId);
                 if (!repository) {
                     return {
                         success: false,
-                        errorMessage: "Package does not have a repository and its name does not match a GitHub repository"
-                    }
+                        errorMessage: "Source repository is not visible"
+                    };
                 }
 
                 const githubUrl = parseGithubUrl(repository);
