@@ -248,12 +248,42 @@ function createPlugin(db: Knex) {
                 packageId
             );
 
+            const id = uuid();
+
             await db("versions").insert({
-                id: uuid(),
+                id: id,
                 package_id: packageId,
                 creation_date: new Date(),
-                slug: version.slug
+                slug: version.slug,
+                description: version.description,
+                readme: version.readme,
+                readme_type: version.readmeType,
+                asset_hash: version.assetHash
             });
+
+            for (const tag of version.tags) {
+                const existingTag = await db("package_tags").first({
+                    package_id: packageId,
+                    tag
+                });
+
+                if (existingTag) {
+                    await db("package_tags")
+                        .update({
+                            version_id: id
+                        })
+                        .where({
+                            package_id: packageId,
+                            tag
+                        });
+                } else {
+                    await db("package_tags").insert({
+                        package_id: packageId,
+                        tag,
+                        version_id: id
+                    });
+                }
+            }
         }
     });
 }
