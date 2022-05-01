@@ -189,6 +189,7 @@ const pluginExport: PluginExport<never, false> = {
 
                     const canViewPackage = await authPlugin.check(accessToken, {
                         kind: "package.view",
+                        feedSlug,
                         slug: packageSlug
                     });
 
