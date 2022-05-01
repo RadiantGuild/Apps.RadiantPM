@@ -41,4 +41,11 @@ export default interface StoragePlugin extends PluginBase<"storage"> {
      * @param id The id of the file
      */
     read(category: FileCategory, id: string): Buffer | Promise<Buffer>;
+
+    /**
+     * Hashes the file with the specified method. If the method isn't supported, an error should be thrown.
+     *
+     * The output encoding is hexadecimal, if another encoding is needed the result can be converted.
+     */
+    hash(method: string, category: FileCategory, id: string): Promise<string>;
 }

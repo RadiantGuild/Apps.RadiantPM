@@ -237,27 +237,43 @@ const pluginExport: PluginExport<never, false> = {
                     );
 
                     const versionObjects = Object.fromEntries(
-                        versions.map(version => {
-                            const packageJsonObj = JSON.parse(version.metafile);
+                        await Promise.all(
+                            versions.map(async version => {
+                                const packageJsonObj = JSON.parse(
+                                    version.metafile
+                                );
 
-                            const filledAssetUrl = fillUrl(
-                                pkgStoragePlugin.assetUrl,
-                                {
-                                    category: "pkg",
-                                    id: version.assetHash
-                                }
-                            );
-
-                            return [
-                                version.slug,
-                                {
-                                    ...packageJsonObj,
-                                    dist: {
-                                        tarball: filledAssetUrl
+                                const filledAssetUrl = fillUrl(
+                                    pkgStoragePlugin.assetUrl,
+                                    {
+                                        category: "pkg",
+                                        id: version.assetHash
                                     }
-                                }
-                            ];
-                        })
+                                );
+
+                                const tarballHash = await pkgStoragePlugin.hash(
+                                    "sha512",
+                                    "pkg",
+                                    version.assetHash
+                                );
+
+                                const tarballHashB64 = Buffer.from(
+                                    tarballHash,
+                                    "hex"
+                                ).toString("base64");
+
+                                return [
+                                    version.slug,
+                                    {
+                                        ...packageJsonObj,
+                                        dist: {
+                                            tarball: filledAssetUrl,
+                                            integrity: `sha512-${tarballHashB64}`
+                                        }
+                                    }
+                                ];
+                            })
+                        )
                     );
 
                     const versionCreationTimes = Object.fromEntries(

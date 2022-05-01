@@ -280,6 +280,7 @@ importers:
       '@radiantpm/plugin-utils': workspace:^0.1.0
       '@types/node': ^16
       '@types/url-join': ^4.0.1
+      hasha: ^5.2.2
       tsup: ^5.6.0
       typescript: ^4.6
       url-join: ^4.0.1
@@ -287,6 +288,7 @@ importers:
       '@radiantpm/log': link:../log
       '@radiantpm/plugin-types': link:../plugin-types
       '@radiantpm/plugin-utils': link:../plugin-utils
+      hasha: 5.2.2
       url-join: 4.0.1
     devDependencies:
       '@types/node': 16.11.7
@@ -4617,6 +4619,14 @@ packages:
     dependencies:
       function-bind: 1.1.1
 
+  /hasha/5.2.2:
+    resolution: {integrity: sha512-Hrp5vIK/xr5SkeN2onO32H0MgNZ0f17HRNH39WfL0SYUNOTZ5Lz1TJ8Pajo/87dYGEFlLMm7mIc/k/s6Bvz9HQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      is-stream: 2.0.1
+      type-fest: 0.8.1
+    dev: false
+
   /helpertypes/0.0.17:
     resolution: {integrity: sha512-muWKRSBsqN3MzqLdh82QfV7vWWwAYvHh3On87z898X+xZ5H2tPRQ5Y6hHA3BXSE+TueztA07iw5bInjwAT3x8A==}
     engines: {node: '>=10.0.0'}
@@ -4963,7 +4973,6 @@ packages:
   /is-stream/2.0.1:
     resolution: {integrity: sha512-hFoiJiTl63nn+kstHGBtewWSKnQLpyb155KHheA1l39uvtO9nWIop1p3udqPcUd/xbF1VLMO4n7OI6p7RbngDg==}
     engines: {node: '>=8'}
-    dev: true
 
   /is-string/1.0.7:
     resolution: {integrity: sha512-tE2UXzivje6ofPW7l23cjDOMa09gb7xlAqG6jG5ej6uPV32TlWP3NKPigtaGeHNu9fohccRYvIiZMfOOnOYUtg==}
@@ -7740,7 +7749,6 @@ packages:
   /type-fest/0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
-    dev: true
 
   /type-fest/2.1.0:
     resolution: {integrity: sha512-2wHUmKDy5wNLmebekbHx/zE9ElYAKOmz34psTLG7OwyEJHaIUr6jnaCd55EvgrawAvliwbwgbyH1LkxIfWFyNg==}
