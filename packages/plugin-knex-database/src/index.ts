@@ -249,6 +249,7 @@ function createPlugin(db: Knex) {
             );
 
             await db("versions").insert({
+                id: uuid(),
                 package_id: packageId,
                 creation_date: new Date(),
                 slug: version.slug
