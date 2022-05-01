@@ -26,8 +26,8 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                 }
 
                 const packageId = await ctx.db.getPackageIdFromSlug(
-                    slug,
-                    feedId
+                    feedId,
+                    slug
                 );
 
                 if (!packageId) {
