@@ -14,7 +14,7 @@ import {
     RouteMiddlewarePlugin
 } from "@radiantpm/plugin-utils";
 import {setError} from "@radiantpm/plugin-utils/req-utils";
-import {async as hash, fromFile as hashFile} from "hasha";
+import hasha from "hasha";
 import urljoin from "url-join";
 import LocalStoragePluginConfig from "./LocalStoragePluginConfig";
 
@@ -99,7 +99,7 @@ class LocalStorageStoragePlugin implements StoragePlugin {
     }
 
     async write(category: FileCategory, content: Buffer): Promise<string> {
-        const id = await hash(content, {
+        const id = await hasha.async(content, {
             algorithm: "sha256",
             encoding: "hex"
         });
@@ -116,7 +116,7 @@ class LocalStorageStoragePlugin implements StoragePlugin {
         id: string
     ): Promise<string> {
         const physicalPath = getFilePath(this.config.hostPath, category, id);
-        return await hashFile(physicalPath, {algorithm: method});
+        return await hasha.fromFile(physicalPath, {algorithm: method});
     }
 }
 
