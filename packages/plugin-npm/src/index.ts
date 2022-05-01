@@ -16,7 +16,7 @@ import {
 } from "@radiantpm/plugin-utils";
 import {getJson, setJson} from "@radiantpm/plugin-utils/req-utils";
 import hasha from "hasha";
-import JSZip from "jszip";
+import Untargz from "./utils/Untargz";
 
 interface CouchLoginBody {
     name: string;
@@ -425,6 +425,15 @@ const pluginExport: PluginExport<never, false> = {
 
                     const version = Object.keys(pushRequest.versions)[0];
 
+                    const existingVersion = await dbPlugin.getVersionId(
+                        packageId,
+                        version
+                    );
+
+                    if (existingVersion) {
+                        throw new HttpError(409, "Version already exists");
+                    }
+
                     if (
                         Object.values(pushRequest["dist-tags"]).some(
                             val => val !== version
@@ -495,11 +504,21 @@ const pluginExport: PluginExport<never, false> = {
                         );
                     }
 
-                    const sourceZip = await JSZip.loadAsync(fileBuffer);
+                    const sourceFiles = await Untargz.fromBuffer(fileBuffer, {
+                        include: [
+                            "package/readme.md",
+                            "package/readme.txt",
+                            "package/package.json"
+                        ],
+                        caseInsensitive: true
+                    });
 
-                    const readmeFileName = Object.keys(sourceZip.files).find(
-                        file => /^readme\.(?:txt|md)$/i.test(file)
-                    );
+                    const packageDir = sourceFiles.getDir("package");
+
+                    const readmeFileName = packageDir.firstThatExists([
+                        "README.md",
+                        "README.txt"
+                    ]);
 
                     if (!readmeFileName) {
                         throw new HttpError(
@@ -508,22 +527,24 @@ const pluginExport: PluginExport<never, false> = {
                         );
                     }
 
-                    const readme = sourceZip.file(readmeFileName);
+                    const readme = packageDir.getFile(readmeFileName);
 
                     assert(
                         readme,
                         "Readme file existed but then stopped existing"
                     );
 
-                    const readmeSource = await readme.async("text");
+                    const readmeSource = readme.toString("utf8");
 
-                    const packageJson = await sourceZip.file("package.json");
+                    const packageJson = await packageDir.getFile(
+                        "package.json"
+                    );
 
                     if (!packageJson) {
                         throw new HttpError(400, "Missing package.json");
                     }
 
-                    const packageJsonSource = await packageJson.async("text");
+                    const packageJsonSource = packageJson.toString("utf8");
 
                     const assetId = await pkgStoragePlugin.write(
                         "pkg",
@@ -541,6 +562,10 @@ const pluginExport: PluginExport<never, false> = {
                             ? "md"
                             : "txt",
                         metafile: packageJsonSource
+                    });
+
+                    await setJson(ctx.res, 200, {
+                        success: true
                     });
                 }
             )

@@ -303,12 +303,15 @@ importers:
       '@radiantpm/plugin-error-handler': workspace:^0.1.0
       '@radiantpm/plugin-types': workspace:^0.1.0
       '@radiantpm/plugin-utils': workspace:^0.1.0
+      '@types/node': ^16
       '@types/pino': ^6
+      '@types/tar-stream': ^2.2.2
       hasha: ^5.2.2
       jszip: ^3.9.1
       pino: ^7
       rollup: ^2.59.0
       rollup-plugin-ts: ^2.0.4
+      tar-stream: ^2.2.0
       typescript: ^4.6
     dependencies:
       '@radiantpm/bfutils': link:../bfutils
@@ -318,8 +321,11 @@ importers:
       '@radiantpm/plugin-utils': link:../plugin-utils
       hasha: 5.2.2
       jszip: 3.9.1
+      tar-stream: 2.2.0
     devDependencies:
+      '@types/node': 16.11.7
       '@types/pino': 6.3.11
+      '@types/tar-stream': 2.2.2
       pino: 7.5.1
       rollup: 2.67.1
       rollup-plugin-ts: 2.0.4_rollup@2.67.1+typescript@4.6.2
@@ -1812,6 +1818,10 @@ packages:
   /@types/node/16.11.7:
     resolution: {integrity: sha512-QB5D2sqfSjCmTuWcBWyJ+/44bcjO7VbjSbOE0ucoVbAsSNQc4Lt6QkgkVXkTDwkL4z/beecZNDvVX15D4P8Jbw==}
 
+  /@types/node/17.0.30:
+    resolution: {integrity: sha512-oNBIZjIqyHYP8VCNAV9uEytXVeXG2oR0w9lgAXro20eugRQfY002qr3CUl6BAe+Yf/z3CRjPdz27Pu6WWtuSRw==}
+    dev: true
+
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
     dev: true
@@ -1843,13 +1853,13 @@ packages:
   /@types/pino-std-serializers/2.4.1:
     resolution: {integrity: sha512-17XcksO47M24IVTVKPeAByWUd3Oez7EbIjXpSbzMPhXVzgjGtrOa49gKBwxH9hb8dKv58OelsWQ+A1G1l9S3wQ==}
     dependencies:
-      '@types/node': 16.11.7
+      '@types/node': 17.0.30
     dev: true
 
   /@types/pino/6.3.11:
     resolution: {integrity: sha512-S7+fLONqSpHeW9d7TApUqO6VN47KYgOXhCNKwGBVLHObq8HhaAYlVqUNdfnvoXjCMiwE5xcPm/5R2ZUh8bgaXQ==}
     dependencies:
-      '@types/node': 16.11.7
+      '@types/node': 17.0.30
       '@types/pino-pretty': 4.7.1
       '@types/pino-std-serializers': 2.4.1
       sonic-boom: 2.3.0
@@ -1910,6 +1920,12 @@ packages:
 
   /@types/shell-quote/1.7.1:
     resolution: {integrity: sha512-SWZ2Nom1pkyXCDohRSrkSKvDh8QOG9RfAsrt5/NsPQC4UQJ55eG0qClA40I+Gkez4KTQ0uDUT8ELRXThf3J5jw==}
+    dev: true
+
+  /@types/tar-stream/2.2.2:
+    resolution: {integrity: sha512-1AX+Yt3icFuU6kxwmPakaiGrJUwG44MpuiqPg4dSolRFk6jmvs4b3IbUol9wKDLIgU76gevn3EwE8y/DkSJCZQ==}
+    dependencies:
+      '@types/node': 17.0.30
     dev: true
 
   /@types/tunnel/0.0.3:
