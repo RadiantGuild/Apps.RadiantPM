@@ -21,8 +21,11 @@ import LocalStoragePluginConfig from "./LocalStoragePluginConfig";
 const logger = createLogger("plugin-local-storage");
 
 function getFilePath(hostPath: string, category: string, id: string) {
-    category = category.replace(/[^a-z]+/gi, "-");
-    id = id.replace(/[^a-z.]+/gi, "-");
+    if (!fileCategories.has(category as FileCategory)) {
+        throw new Error("Invalid file category");
+    }
+
+    id = id.replace(/[/-]+/gi, "-");
     return resolve(join(hostPath, category, id));
 }
 
