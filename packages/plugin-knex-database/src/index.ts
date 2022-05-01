@@ -228,7 +228,7 @@ function createPlugin(db: Knex) {
                 );
 
             const tags = await db("package_tags")
-                .where("version_id")
+                .where("version_id", id)
                 .select("tag");
 
             return {
