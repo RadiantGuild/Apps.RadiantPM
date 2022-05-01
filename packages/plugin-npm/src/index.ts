@@ -342,8 +342,6 @@ const pluginExport: PluginExport<never, false> = {
             createRouteMiddlewarePlugin(
                 "PUT /-/npm/[feed_slug]/[package_name_incl_scope]",
                 async (ctx: RoutedRequestContext) => {
-                    // TODO: Test
-
                     const feedSlug = ctx.params.get("feed_slug");
                     assert(feedSlug, "Missing feed_slug");
 
