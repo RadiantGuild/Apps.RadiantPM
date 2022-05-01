@@ -21,11 +21,18 @@ interface PackageViewScope {
     slug: string;
 }
 
+interface PackageCreateScope {
+    kind: "package.create";
+    feedSlug: string;
+    slug: string;
+}
+
 type Scopes =
     | HomepageViewScope
     | FeedViewScope
     | FeedCreateScope
-    | PackageViewScope;
+    | PackageViewScope
+    | PackageCreateScope;
 
 type Scope<Filter extends Scopes["kind"] = Scopes["kind"]> = Extract<
     Scopes,
@@ -34,11 +41,12 @@ type Scope<Filter extends Scopes["kind"] = Scopes["kind"]> = Extract<
 
 export default Scope;
 
-const validScopeKinds: ReadonlySet<Scope["kind"]> = new Set([
+const validScopeKinds: ReadonlySet<Scope["kind"]> = new Set<Scope["kind"]>([
     "page.view",
     "feed.view",
     "feed.create",
-    "package.view"
+    "package.view",
+    "package.create"
 ]);
 
 export function isValidScopeKind(kind: string): kind is Scope["kind"] {

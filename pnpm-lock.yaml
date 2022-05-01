@@ -304,8 +304,11 @@ importers:
       '@radiantpm/plugin-types': workspace:^0.1.0
       '@radiantpm/plugin-utils': workspace:^0.1.0
       '@types/pino': ^6
+      hasha: ^5.2.2
+      jszip: ^3.9.1
       pino: ^7
-      tsup: ^5.6.0
+      rollup: ^2.59.0
+      rollup-plugin-ts: ^2.0.4
       typescript: ^4.6
     dependencies:
       '@radiantpm/bfutils': link:../bfutils
@@ -313,10 +316,13 @@ importers:
       '@radiantpm/plugin-error-handler': link:../plugin-error-handler
       '@radiantpm/plugin-types': link:../plugin-types
       '@radiantpm/plugin-utils': link:../plugin-utils
+      hasha: 5.2.2
+      jszip: 3.9.1
     devDependencies:
       '@types/pino': 6.3.11
       pino: 7.5.1
-      tsup: 5.11.13_typescript@4.6.2
+      rollup: 2.67.1
+      rollup-plugin-ts: 2.0.4_rollup@2.67.1+typescript@4.6.2
       typescript: 4.6.2
 
   packages/plugin-standard-frontend:
@@ -4727,6 +4733,10 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immediate/3.0.6:
+    resolution: {integrity: sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=}
+    dev: false
+
   /import-cwd/3.0.0:
     resolution: {integrity: sha512-4pnzH16plW+hgvRECbDWpQl3cqtvSofHWh44met7ESfZ8UZOWWddm8hEyDTqREJ9RbYHY8gi8DqmaelApoOGMg==}
     engines: {node: '>=8'}
@@ -5148,6 +5158,15 @@ packages:
       object.assign: 4.1.2
     dev: true
 
+  /jszip/3.9.1:
+    resolution: {integrity: sha512-H9A60xPqJ1CuC4Ka6qxzXZeU8aNmgOeP5IFqwJbQQwtu2EUYxota3LdsiZWplF7Wgd9tkAd0mdu36nceSaPuYw==}
+    dependencies:
+      lie: 3.3.0
+      pako: 1.0.11
+      readable-stream: 2.3.7
+      set-immediate-shim: 1.0.1
+    dev: false
+
   /jwa/1.4.1:
     resolution: {integrity: sha512-qiLX/xhEEFKUAJ6FiBMbes3w9ATzyk5W7Hvzpa/SLYdxNtng+gcurvrI7TbACjIXlsJyr05/S1oUhZrc63evQA==}
     dependencies:
@@ -5309,6 +5328,12 @@ packages:
       prelude-ls: 1.2.1
       type-check: 0.4.0
     dev: true
+
+  /lie/3.3.0:
+    resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
+    dependencies:
+      immediate: 3.0.6
+    dev: false
 
   /lilconfig/2.0.3:
     resolution: {integrity: sha512-EHKqr/+ZvdKCifpNrJCKxBTgk5XupZA3y/aCPY9mxfgBzmgh93Mt/WqjjQ38oMxXuvDokaKiM3lAgvSH2sjtHg==}
@@ -6027,6 +6052,10 @@ packages:
 
   /packet-reader/1.0.0:
     resolution: {integrity: sha512-HAKu/fG3HpHFO0AA8WE8q2g+gBJaZ9MG7fcKk+IJPLTGAD6Psw4443l+9DGRbOIh3/aXr7Phy0TjilYivJo5XQ==}
+    dev: false
+
+  /pako/1.0.11:
+    resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
     dev: false
 
   /pako/2.0.4:
@@ -6950,6 +6979,11 @@ packages:
   /set-harmonic-interval/1.0.1:
     resolution: {integrity: sha512-AhICkFV84tBP1aWqPwLZqFvAwqEoVA9kxNMniGEUvzOlm4vLmOFLiTT3UZ6bziJTy4bOVpzWGTfSCbmaayGx8g==}
     engines: {node: '>=6.9'}
+    dev: false
+
+  /set-immediate-shim/1.0.1:
+    resolution: {integrity: sha1-SysbJ+uAip+NzEgaWOXlb1mfP2E=}
+    engines: {node: '>=0.10.0'}
     dev: false
 
   /setprototypeof/1.2.0:

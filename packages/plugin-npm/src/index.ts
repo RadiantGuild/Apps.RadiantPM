@@ -14,6 +14,8 @@ import {
     RoutedRequestContext
 } from "@radiantpm/plugin-utils";
 import {getJson, setJson} from "@radiantpm/plugin-utils/req-utils";
+import hasha from "hasha";
+import JSZip from "jszip";
 
 interface CouchLoginBody {
     name: string;
@@ -36,6 +38,25 @@ interface PackageName {
      * The name of the package, or null if it has an invalid format
      */
     name: string | null;
+}
+
+interface PushRequestPackageJson {
+    _integrity: string;
+    _from: string;
+}
+
+interface PushRequestAttachment {
+    content_type: string;
+    data: string;
+    length: number;
+}
+
+interface PushRequest {
+    name: string;
+    description: string;
+    "dist-tags": Record<string, string>;
+    versions: Record<string, PushRequestPackageJson>;
+    _attachments: Record<string, PushRequestAttachment>;
 }
 
 function parsePackageName(decodedPackageNameInclScope: string): PackageName {
@@ -77,17 +98,6 @@ const pluginExport: PluginExport<never, false> = {
 
     init() {
         return [
-            {
-                type: "middleware",
-                shouldHandle(): boolean {
-                    return true;
-                },
-                async handle(ctx, next): Promise<void> {
-                    console.log(ctx.req.method, ctx.req.url.toString());
-
-                    await next();
-                }
-            },
             createRouteMiddlewarePlugin(
                 "PUT /-/npm/[feed_slug]/-/user/[user_id]",
                 async (ctx: RoutedRequestContext) => {
@@ -306,6 +316,213 @@ const pluginExport: PluginExport<never, false> = {
                         "dist-tags": distTags,
                         versions: versionObjects,
                         time: versionCreationTimes
+                    });
+                }
+            ),
+            createRouteMiddlewarePlugin(
+                "PUT /-/npm/[feed_slug]/[package_name_incl_scope]",
+                async (ctx: RoutedRequestContext) => {
+                    // TODO: Test
+
+                    const feedSlug = ctx.params.get("feed_slug");
+                    assert(feedSlug, "Missing feed_slug");
+
+                    const packageNameInclScope = ctx.params.get(
+                        "package_name_incl_scope"
+                    );
+
+                    assert(
+                        packageNameInclScope,
+                        "Missing package_name_incl_scope"
+                    );
+
+                    const decodedPackageNameInclScope =
+                        decodeURIComponent(packageNameInclScope);
+
+                    const {scope, name: packageSlug} = parsePackageName(
+                        decodedPackageNameInclScope
+                    );
+
+                    if (!scope || !packageSlug) {
+                        throw new HttpError(
+                            400,
+                            "Missing scope in package name"
+                        );
+                    }
+
+                    if (scope !== feedSlug) {
+                        throw new HttpError(
+                            400,
+                            "Scope does not match the feed slug"
+                        );
+                    }
+
+                    const accessToken = getNpmAccessToken(ctx.req);
+
+                    const canViewFeed = await authPlugin.check(accessToken, {
+                        kind: "feed.view",
+                        slug: feedSlug
+                    });
+
+                    const feedId = await dbPlugin.getFeedIdFromSlug(feedSlug);
+
+                    if (!canViewFeed.success || !feedId) {
+                        throw new HttpError(
+                            404,
+                            "Feed does not exist or you don't have permission to see it"
+                        );
+                    }
+
+                    const canCreatePackage = await authPlugin.check(
+                        accessToken,
+                        {
+                            kind: "package.create",
+                            feedSlug,
+                            slug: packageSlug
+                        }
+                    );
+
+                    const packageId = await dbPlugin.getPackageIdFromSlug(
+                        feedId,
+                        packageSlug
+                    );
+
+                    if (!canCreatePackage.success || !packageId) {
+                        throw new HttpError(
+                            404,
+                            "Package does not exist, or you don't have permission to see it, or you don't have permission to push to it"
+                        );
+                    }
+
+                    const pushRequest = await getJson<PushRequest>(ctx.req);
+
+                    if (Object.keys(pushRequest.versions).length > 0) {
+                        throw new HttpError(
+                            400,
+                            "Multiple version uploads is not supported"
+                        );
+                    }
+
+                    const version = Object.keys(pushRequest.versions)[0];
+
+                    if (
+                        Object.values(pushRequest["dist-tags"]).some(
+                            val => val !== version
+                        )
+                    ) {
+                        throw new HttpError(
+                            400,
+                            "A dist tag points to a different version"
+                        );
+                    }
+
+                    const tags = Object.keys(pushRequest["dist-tags"]);
+
+                    const versionPkgJson = pushRequest.versions[version];
+
+                    if (!versionPkgJson._from.startsWith("file:")) {
+                        throw new HttpError(400, "_from is not a file name");
+                    }
+
+                    const attachmentName = versionPkgJson._from.substring(
+                        "file:".length
+                    );
+
+                    const attachment = pushRequest._attachments[attachmentName];
+
+                    if (!attachment) {
+                        throw new HttpError(
+                            400,
+                            "_from does not reference an attachment that exists"
+                        );
+                    }
+
+                    if (
+                        attachment.content_type !== "application/octet-stream"
+                    ) {
+                        throw new HttpError(
+                            400,
+                            "Content types other than application/octet-stream are currently not supported"
+                        );
+                    }
+
+                    const fileBuffer = Buffer.from(attachment.data, "base64");
+
+                    if (fileBuffer.length !== attachment.length) {
+                        throw new HttpError(
+                            400,
+                            "Attachment length does match"
+                        );
+                    }
+
+                    if (!versionPkgJson._integrity.startsWith("sha512-")) {
+                        throw new HttpError(
+                            400,
+                            "Hashing methods other than sha512 are currently not supported"
+                        );
+                    }
+
+                    const expectedHashB64 = versionPkgJson._integrity.substring(
+                        "sha512-".length
+                    );
+                    const actualHash = await hasha.async(fileBuffer, {
+                        algorithm: "sha512",
+                        encoding: "base64"
+                    });
+
+                    if (actualHash !== expectedHashB64) {
+                        throw new HttpError(
+                            400,
+                            "Attachment failed integrity check"
+                        );
+                    }
+
+                    const sourceZip = await JSZip.loadAsync(fileBuffer);
+
+                    const readmeFileName = Object.keys(sourceZip.files).find(
+                        file => /^readme\.(?:txt|md)$/i.test(file)
+                    );
+
+                    if (!readmeFileName) {
+                        throw new HttpError(
+                            400,
+                            "Missing README, which must be either a txt or md file"
+                        );
+                    }
+
+                    const readme = sourceZip.file(readmeFileName);
+
+                    assert(
+                        readme,
+                        "Readme file existed but then stopped existing"
+                    );
+
+                    const readmeSource = await readme.async("text");
+
+                    const packageJson = await sourceZip.file("package.json");
+
+                    if (!packageJson) {
+                        throw new HttpError(400, "Missing package.json");
+                    }
+
+                    const packageJsonSource = await packageJson.async("text");
+
+                    const assetId = await pkgStoragePlugin.write(
+                        "pkg",
+                        fileBuffer
+                    );
+
+                    await dbPlugin.createVersion(packageId, {
+                        slug: version,
+                        description: pushRequest.description,
+                        creationDate: new Date(),
+                        tags,
+                        assetHash: assetId,
+                        readme: readmeSource,
+                        readmeType: readmeFileName.endsWith(".md")
+                            ? "md"
+                            : "txt",
+                        metafile: packageJsonSource
                     });
                 }
             )

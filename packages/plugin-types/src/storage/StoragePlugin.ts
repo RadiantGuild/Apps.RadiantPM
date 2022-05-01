@@ -30,10 +30,10 @@ export default interface StoragePlugin extends PluginBase<"storage"> {
     /**
      * Write a file to the storage
      * @param category The type of file this is
-     * @param id The id of the file
      * @param content The contents of the file
+     * @returns the ID of the asset, that can be used in the `read` method
      */
-    write(category: FileCategory, id: string, content: Buffer): void | Promise<void>;
+    write(category: FileCategory, content: Buffer): Promise<string>;
 
     /**
      * Read the contents of a file from storage
