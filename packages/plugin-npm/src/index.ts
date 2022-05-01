@@ -198,13 +198,6 @@ const pluginExport: PluginExport<never, false> = {
                         );
                     }
 
-                    if (!handlerPlugin.feedSlugMatches(packageSlug, feedSlug)) {
-                        throw new HttpError(
-                            400,
-                            "Scope does not match the feed slug"
-                        );
-                    }
-
                     const accessToken = getNpmAccessToken(ctx.req);
 
                     const canViewFeed = await authPlugin.check(accessToken, {
@@ -238,8 +231,6 @@ const pluginExport: PluginExport<never, false> = {
                             "Package does not exist or you don't have permission to see it"
                         );
                     }
-
-                    // TODO: Test that this works
 
                     const pkg = await dbPlugin.getPackageFromId(packageId);
 
@@ -281,6 +272,11 @@ const pluginExport: PluginExport<never, false> = {
                                     }
                                 );
 
+                                const absoluteFilledAssetUrl = new URL(
+                                    filledAssetUrl,
+                                    ctx.req.url
+                                ).toString();
+
                                 const tarballHash = await pkgStoragePlugin.hash(
                                     "sha512",
                                     "pkg",
@@ -297,7 +293,7 @@ const pluginExport: PluginExport<never, false> = {
                                     {
                                         ...packageJsonObj,
                                         dist: {
-                                            tarball: filledAssetUrl,
+                                            tarball: absoluteFilledAssetUrl,
                                             integrity: `sha512-${tarballHashB64}`
                                         }
                                     }
@@ -327,6 +323,7 @@ const pluginExport: PluginExport<never, false> = {
                     );
 
                     const baseInfo = {
+                        name: pkg.name,
                         description: pkg.description,
                         readme: latestVersion.readme
                     };
@@ -365,13 +362,6 @@ const pluginExport: PluginExport<never, false> = {
                         throw new HttpError(
                             400,
                             "Missing scope in package name"
-                        );
-                    }
-
-                    if (handlerPlugin.feedSlugMatches(packageSlug, feedSlug)) {
-                        throw new HttpError(
-                            400,
-                            "Scope does not match the feed slug"
                         );
                     }
 
