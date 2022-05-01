@@ -5,7 +5,8 @@ import HttpError from "@radiantpm/plugin-error-handler/http-error";
 import {
     AuthenticationPlugin,
     DatabasePlugin,
-    HttpRequest, PackageHandlerPlugin,
+    HttpRequest,
+    PackageHandlerPlugin,
     PluginExport,
     StoragePlugin
 } from "@radiantpm/plugin-types";
@@ -443,18 +444,16 @@ const pluginExport: PluginExport<never, false> = {
                         throw new HttpError(400, "_from is not a file name");
                     }
 
-                    const attachmentName = versionPkgJson._from.substring(
-                        "file:".length
-                    );
-
-                    const attachment = pushRequest._attachments[attachmentName];
-
-                    if (!attachment) {
+                    if (Object.keys(pushRequest._attachments).length !== 1) {
                         throw new HttpError(
                             400,
-                            "_from does not reference an attachment that exists"
+                            "Only one attachment can be uploaded"
                         );
                     }
+
+                    const attachment = Object.values(
+                        pushRequest._attachments
+                    )[0];
 
                     if (
                         attachment.content_type !== "application/octet-stream"
