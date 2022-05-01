@@ -45,4 +45,9 @@ export interface Version extends BaseVersion {
      * if a type is not supported, use the value `"plain"`.
      */
     readmeType: "plain" | string;
+
+    /**
+     * A file containing metadata about this version. The format of this file is specific to the package type.
+     */
+    metafile: string;
 }

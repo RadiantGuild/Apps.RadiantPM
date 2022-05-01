@@ -207,7 +207,8 @@ function createPlugin(db: Knex) {
                 creation_date,
                 asset_hash,
                 readme,
-                readme_type
+                readme_type,
+                metafile
             } = await db("versions")
                 .where("id", id)
                 .first(
@@ -216,7 +217,8 @@ function createPlugin(db: Knex) {
                     "creation_date",
                     "asset_hash",
                     "readme",
-                    "readme_type"
+                    "readme_type",
+                    "metafile"
                 );
 
             const tags = await db("package_tags")
@@ -230,6 +232,7 @@ function createPlugin(db: Knex) {
                 assetHash: asset_hash,
                 readme,
                 readmeType: readme_type,
+                metafile,
                 tags: tags.map(({tag}) => tag)
             };
         },
