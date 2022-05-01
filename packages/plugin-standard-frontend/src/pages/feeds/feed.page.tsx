@@ -49,7 +49,7 @@ export function Page({feed, packages}: FeedPageProps): ReactElement {
                         >
                             <Details>
                                 <Heading as="h2">{pkg.name}</Heading>
-                                <SeparatedTextList>
+                                <SeparatedTextList level="sub">
                                     <Code>v{pkg.latestVersion}</Code>
                                     <Code>Last updated {pkg.lastUpdated}</Code>
                                     <Code>{pkg.versionsCount} versions</Code>
@@ -68,14 +68,6 @@ export function Page({feed, packages}: FeedPageProps): ReactElement {
                     add package
                 </AddPackageLink>
             </MainContainer>
-
-            <ul>
-                {packages.map(pkg => (
-                    <li key={pkg.slug}>
-                        {pkg.name} ({pkg.latestVersion})
-                    </li>
-                ))}
-            </ul>
         </>
     );
 }
