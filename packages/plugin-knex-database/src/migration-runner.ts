@@ -811,7 +811,7 @@ export async function runMigrations<Migrators extends DefaultMigratorArray>(
         upTo
     ) as readonly AllTableActions[];
 
-    const newMigrationName = upTo ?? migrations.at(-1)!.name;
+    const newMigrationName = upTo ?? migrationsToRun.at(-1)!.name;
 
     if (currentMigration) {
         await knex<{name: string}>("__migrations").update(
