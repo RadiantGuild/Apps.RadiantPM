@@ -1,7 +1,7 @@
 import {ok as assert} from "assert";
 import {createReadStream, existsSync} from "fs";
-import {readFile, writeFile} from "fs/promises";
-import {join, resolve} from "path";
+import {mkdir, readFile, writeFile} from "fs/promises";
+import {dirname, join, resolve} from "path";
 import {createLogger} from "@radiantpm/log";
 import {
     fileCategories,
@@ -98,6 +98,10 @@ class LocalStorageStoragePlugin implements StoragePlugin {
     async read(category: FileCategory, id: string): Promise<Buffer> {
         const physicalPath = getFilePath(this.config.hostPath, category, id);
 
+        if (!existsSync(physicalPath)) {
+            throw new Error("Asset does not exist");
+        }
+
         return await readFile(physicalPath);
     }
 
@@ -108,6 +112,8 @@ class LocalStorageStoragePlugin implements StoragePlugin {
         });
 
         const physicalPath = getFilePath(this.config.hostPath, category, id);
+
+        await mkdir(dirname(physicalPath), {recursive: true});
         await writeFile(physicalPath, content);
 
         return id;
