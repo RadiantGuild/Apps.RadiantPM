@@ -50,18 +50,27 @@ export function Page({feed, packages}: FeedPageProps): ReactElement {
                         >
                             <Details>
                                 <Heading as="h2">{pkg.name}</Heading>
-                                <SeparatedTextList level="sub">
-                                    <Code>v{pkg.latestVersion}</Code>
-                                    <Code>{pkg.versionsCount} versions</Code>
-                                    {pkg.lastUpdated && (
+                                {pkg.versionsCount > 0 ? (
+                                    <SeparatedTextList level="sub">
+                                        <Code>v{pkg.latestVersion}</Code>
                                         <span>
-                                            Last updated{" "}
-                                            <ReactTimeago
-                                                date={pkg.lastUpdated}
-                                            />
+                                            {pkg.versionsCount} versions
                                         </span>
-                                    )}
-                                </SeparatedTextList>
+                                        {pkg.lastUpdated && (
+                                            <span>
+                                                Last updated{" "}
+                                                <ReactTimeago
+                                                    date={pkg.lastUpdated}
+                                                />
+                                            </span>
+                                        )}
+                                    </SeparatedTextList>
+                                ) : (
+                                    <Label level="sub">
+                                        This package doesn&rsquo;t have any
+                                        versions yet
+                                    </Label>
+                                )}
                             </Details>
                         </DetailedLink>
                     ))
