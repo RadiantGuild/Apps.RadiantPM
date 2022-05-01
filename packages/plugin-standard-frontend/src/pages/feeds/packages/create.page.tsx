@@ -128,18 +128,18 @@ export function Page({
                             onChange={setDisplayName}
                         />
                     </WideLabel>
-                    <LabelledInput label="Repository (optional)">
-                        <CodeTextbox
-                            placeholder="git@github.com/my/repository"
-                            value={repository}
-                            onChange={setRepository}
-                        />
-                    </LabelledInput>
                     <LabelledInput label="Slug">
                         <CodeTextbox
                             placeholder={randomSlug}
                             value={slug}
                             onChange={setSlug}
+                        />
+                    </LabelledInput>
+                    <LabelledInput label="Repository (optional)">
+                        <CodeTextbox
+                            placeholder="git@github.com/my/repository"
+                            value={repository}
+                            onChange={setRepository}
                         />
                     </LabelledInput>
                 </FieldsContainer>

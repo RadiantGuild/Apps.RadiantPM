@@ -5,22 +5,11 @@ import {Parameters} from "../Parameters";
 export function register(handler: SwitchedScopeHandler<Parameters>): void {
     handler.register("package.create", {
         async check({type, slug, feedSlug, repository}, cfg, ctx) {
-            const packageHandler = ctx.getPackageHandler(type);
-
-            if (!packageHandler.feedSlugMatches(slug, feedSlug)) {
-                return {
-                    success: false,
-                    errorMessage: "Package scope does not match feed slug"
-                };
-            }
-
             try {
-                const githubRepoName = packageHandler.getPackageName(slug);
-
                 // check if the user can push to a repo with the name from the slug
                 const repo = await ctx.gh.repos.get({
                     owner: feedSlug,
-                    repo: githubRepoName
+                    repo: slug
                 });
 
                 if (repo.data.permissions?.push) {

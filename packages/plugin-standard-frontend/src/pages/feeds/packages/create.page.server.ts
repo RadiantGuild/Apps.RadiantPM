@@ -15,8 +15,7 @@ export async function onBeforeRender(
             pageProps: {
                 feedSlug,
                 randomName: name,
-                randomSlug:
-                    "@" + feedSlug + "/" + name.replace(/ /g, "-").toLowerCase()
+                randomSlug: name.replace(/ /g, "-").toLowerCase()
             }
         }
     };
