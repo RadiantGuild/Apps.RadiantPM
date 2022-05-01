@@ -2,12 +2,12 @@ import {createColumn, createMigrator, deleteColumn, modifyTable} from "../migrat
 
 export default createMigrator("D202205010134_Version_Metafile", {
     up: [
-        modifyTable("packages", [
+        modifyTable("versions", [
             createColumn("metafile", "text")
         ] as const)
     ] as const,
     down: [
-        modifyTable("packages", [
+        modifyTable("versions", [
             deleteColumn("metafile")
         ] as const)
     ] as const
