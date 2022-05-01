@@ -82,7 +82,12 @@ function createPlugin(db: Knex) {
 
             const result = (await db("packages")
                 .leftJoin("versions", "packages.id", "=", "versions.id")
-                .leftJoin("package_tags", "packages.id", "=", "versions.id")
+                .leftJoin(
+                    "package_tags",
+                    "packages.id",
+                    "=",
+                    "package_tags.package_id"
+                )
                 .where({
                     "package_tags.tag": LATEST_TAG,
                     "packages.feed_id": feedId
