@@ -1,5 +1,6 @@
 import type {Feed, SimplePackage} from "@radiantpm/plugin-types";
 import {ReactElement} from "react";
+import ReactTimeago from "react-timeago";
 import {DetailedLink, Details} from "~/components/DetailedLink";
 import {Link} from "~/components/Link";
 import {SeparatedTextList} from "~/components/SeparatedTextList";
@@ -51,8 +52,15 @@ export function Page({feed, packages}: FeedPageProps): ReactElement {
                                 <Heading as="h2">{pkg.name}</Heading>
                                 <SeparatedTextList level="sub">
                                     <Code>v{pkg.latestVersion}</Code>
-                                    <Code>Last updated {pkg.lastUpdated}</Code>
                                     <Code>{pkg.versionsCount} versions</Code>
+                                    {pkg.lastUpdated && (
+                                        <span>
+                                            Last updated{" "}
+                                            <ReactTimeago
+                                                date={pkg.lastUpdated}
+                                            />
+                                        </span>
+                                    )}
                                 </SeparatedTextList>
                             </Details>
                         </DetailedLink>

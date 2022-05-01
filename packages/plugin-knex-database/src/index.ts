@@ -117,7 +117,7 @@ function createPlugin(db: Knex) {
                 package_description: string;
                 versions_count: number;
                 latest_version_id: string;
-                last_updated: Date;
+                last_updated: number;
             }[];
 
             return result.map(item => ({
@@ -127,7 +127,7 @@ function createPlugin(db: Knex) {
                 description: item.package_description,
                 versionsCount: item.versions_count,
                 latestVersion: item.latest_version_id,
-                lastUpdated: item.last_updated
+                lastUpdated: new Date(item.last_updated)
             }));
         },
 
