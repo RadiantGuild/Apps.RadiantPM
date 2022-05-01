@@ -262,10 +262,12 @@ function createPlugin(db: Knex) {
             });
 
             for (const tag of version.tags) {
-                const existingTag = await db("package_tags").first({
-                    package_id: packageId,
-                    tag
-                });
+                const existingTag = await db("package_tags")
+                    .first("package_id")
+                    .where({
+                        package_id: packageId,
+                        tag
+                    });
 
                 if (existingTag) {
                     await db("package_tags")
