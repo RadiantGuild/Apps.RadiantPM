@@ -63,7 +63,7 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                     };
                 }
 
-                if (githubUrl.owner !== feedSlug) {
+                if (githubUrl.owner?.toLowerCase() !== feedSlug) {
                     return {
                         success: false,
                         errorMessage:
@@ -71,7 +71,7 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                     };
                 }
 
-                if (!githubUrl.repo) {
+                if (!githubUrl.name) {
                     return {
                         success: false,
                         errorMessage: "No source repository name provided"
@@ -81,7 +81,7 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                 try {
                     const repo = await ctx.gh.repos.get({
                         owner: feedSlug,
-                        repo: githubUrl.repo
+                        repo: githubUrl.name
                     });
 
                     if (repo.data.permissions?.push) {
