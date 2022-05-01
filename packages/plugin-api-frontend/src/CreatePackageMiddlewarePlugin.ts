@@ -68,6 +68,7 @@ export default class CreatePackageMiddlewarePlugin extends RouteMiddlewarePlugin
 
         const packageCreateAuthRes = await authPlugin.check(accessToken, {
             kind: "package.create",
+            type: pkg.type,
             feedSlug,
             slug: pkg.slug,
             repository: pkg.repository

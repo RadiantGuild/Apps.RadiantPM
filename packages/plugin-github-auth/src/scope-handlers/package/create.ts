@@ -4,12 +4,23 @@ import {Parameters} from "../Parameters";
 
 export function register(handler: SwitchedScopeHandler<Parameters>): void {
     handler.register("package.create", {
-        async check({slug, feedSlug, repository}, cfg, ctx) {
+        async check({type, slug, feedSlug, repository}, cfg, ctx) {
+            const packageHandler = ctx.getPackageHandler(type);
+
+            if (!packageHandler.feedSlugMatches(slug, feedSlug)) {
+                return {
+                    success: false,
+                    errorMessage: "Package scope does not match feed slug"
+                };
+            }
+
             try {
+                const githubRepoName = packageHandler.getPackageName(slug);
+
                 // check if the user can push to a repo with the name from the slug
                 const repo = await ctx.gh.repos.get({
                     owner: feedSlug,
-                    repo: slug
+                    repo: githubRepoName
                 });
 
                 if (repo.data.permissions?.push) {
@@ -19,17 +30,19 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                 } else {
                     return {
                         success: false,
-                        errorMessage: "User does not have permission to push to the repository"
+                        errorMessage:
+                            "User does not have permission to push to the repository"
                     };
                 }
-            } catch {
+            } catch (err) {
                 // check if the user can push to a repo with the name from the repository field
 
                 if (!repository) {
                     return {
                         success: false,
-                        errorMessage: "Package does not have a repository and its name does not match a GitHub repository"
-                    }
+                        errorMessage:
+                            "Package does not have a repository and its name does not match a GitHub repository"
+                    };
                 }
 
                 const githubUrl = parseGithubUrl(repository);
@@ -69,7 +82,8 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                     } else {
                         return {
                             success: false,
-                            errorMessage: "User does not have permission to push to the repository"
+                            errorMessage:
+                                "User does not have permission to push to the repository"
                         };
                     }
                 } catch {

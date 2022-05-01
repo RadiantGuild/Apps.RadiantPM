@@ -29,6 +29,7 @@ interface PackageUpdateScope {
 
 interface PackageCreateScope {
     kind: "package.create";
+    type: string;
     feedSlug: string;
     slug: string;
     repository?: string;

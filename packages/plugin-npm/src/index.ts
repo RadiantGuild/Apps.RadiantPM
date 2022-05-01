@@ -98,6 +98,23 @@ const pluginExport: PluginExport<never, false> = {
 
     init() {
         return [
+            {
+                type: "package-handler",
+                packageType: "npm",
+                feedSlugMatches(packageName: string, feedSlug: string) {
+                    const {scope} = parsePackageName(packageName);
+                    if (!scope) return false;
+
+                    // TODO support more conversions
+
+                    return scope === feedSlug.toLowerCase();
+                },
+                getPackageName(packageName: string) {
+                    const {name} = parsePackageName(packageName);
+                    if (!name) throw new Error("Invalid package name");
+                    return name;
+                }
+            },
             createRouteMiddlewarePlugin(
                 "PUT /-/npm/[feed_slug]/-/user/[user_id]",
                 async (ctx: RoutedRequestContext) => {

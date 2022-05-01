@@ -8,6 +8,7 @@ import {
     DatabasePlugin,
     EnvironmentMetadata,
     MiddlewareError,
+    PackageHandlerPlugin,
     PluginExport,
     Scope
 } from "@radiantpm/plugin-types";
@@ -37,6 +38,7 @@ function getErrorMessage(err: unknown): string {
 }
 
 let dbPlugin: DatabasePlugin;
+let packageHandlers: PackageHandlerPlugin[];
 
 class GithubAuthPlugin implements AuthPlugin {
     private static readonly defaultOctokitOptions: Exclude<
@@ -80,7 +82,12 @@ class GithubAuthPlugin implements AuthPlugin {
     ): Promise<AuthenticationCheckResponse> {
         const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
-        const context = new AuthContext(octokit, dbPlugin, authState);
+        const context = new AuthContext({
+            octokit,
+            dbPlugin,
+            authState,
+            packageHandlers
+        });
 
         try {
             return await switchedScopeHandler.check(
@@ -102,7 +109,12 @@ class GithubAuthPlugin implements AuthPlugin {
     ): Promise<AuthenticationListValidResponse> {
         const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
-        const context = new AuthContext(octokit, dbPlugin, authState);
+        const context = new AuthContext({
+            octokit,
+            dbPlugin,
+            authState,
+            packageHandlers
+        });
 
         try {
             return await switchedScopeHandler.listValid(
@@ -259,6 +271,10 @@ const pluginExport: PluginExport<Configuration, true> = {
     },
     onMetaLoaded(meta: EnvironmentMetadata) {
         dbPlugin = meta.selectedPlugins.database;
+
+        packageHandlers = meta.plugins.filter(
+            pl => pl.type === "package-handler"
+        ) as PackageHandlerPlugin[];
     }
 };
 
