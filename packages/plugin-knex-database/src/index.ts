@@ -88,14 +88,15 @@ function createPlugin(db: Knex) {
                     "=",
                     "package_tags.package_id"
                 )
+                // TODO: Figure out why `as never` is required
                 .where({
                     "package_tags.tag": LATEST_TAG,
                     "packages.feed_id": feedId
-                })
+                } as never)
                 .orWhere({
                     "package_tags.tag": null,
                     "packages.feed_id": feedId
-                })
+                } as never)
                 .groupBy("packages.id")
                 .select({
                     package_slug: "packages.slug",
