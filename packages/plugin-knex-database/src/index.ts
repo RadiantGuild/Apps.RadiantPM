@@ -88,7 +88,8 @@ function createPlugin(db: Knex) {
                     "packages.feed_id": feedId
                 })
                 .orWhere({
-                    "package_tags.tag": null
+                    "package_tags.tag": null,
+                    "packages.feed_id": feedId
                 })
                 .groupBy("packages.id")
                 .select({
