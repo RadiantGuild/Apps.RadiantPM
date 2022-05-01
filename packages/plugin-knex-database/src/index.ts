@@ -81,7 +81,7 @@ function createPlugin(db: Knex) {
             queryLogger.trace("Listing packages from feed %s", feedId);
 
             const result = (await db("packages")
-                .leftJoin("versions", "packages.id", "=", "versions.id")
+                .leftJoin("versions", "packages.id", "=", "versions.package_id")
                 .leftJoin(
                     "package_tags",
                     "packages.id",
