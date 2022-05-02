@@ -81,15 +81,22 @@ function createPlugin(db: Knex) {
             queryLogger.trace("Listing packages from feed %s", feedId);
 
             const result = (await db("packages")
-                .leftJoin("versions", "packages.id", "=", "versions.id")
-                .leftJoin("package_tags", "packages.id", "=", "versions.id")
+                .leftJoin("versions", "packages.id", "=", "versions.package_id")
+                .leftJoin(
+                    "package_tags",
+                    "packages.id",
+                    "=",
+                    "package_tags.package_id"
+                )
+                // TODO: Figure out why `as never` is required
                 .where({
                     "package_tags.tag": LATEST_TAG,
                     "packages.feed_id": feedId
-                })
+                } as never)
                 .orWhere({
-                    "package_tags.tag": null
-                })
+                    "package_tags.tag": null,
+                    "packages.feed_id": feedId
+                } as never)
                 .groupBy("packages.id")
                 .select({
                     package_slug: "packages.slug",
@@ -110,7 +117,7 @@ function createPlugin(db: Knex) {
                 package_description: string;
                 versions_count: number;
                 latest_version_id: string;
-                last_updated: Date;
+                last_updated: number;
             }[];
 
             return result.map(item => ({
@@ -120,7 +127,7 @@ function createPlugin(db: Knex) {
                 description: item.package_description,
                 versionsCount: item.versions_count,
                 latestVersion: item.latest_version_id,
-                lastUpdated: item.last_updated
+                lastUpdated: new Date(item.last_updated)
             }));
         },
 
@@ -129,7 +136,7 @@ function createPlugin(db: Knex) {
 
             return db("packages")
                 .where("id", id)
-                .first("slug", "name", "description");
+                .first("slug", "name", "description", "repository");
         },
 
         async getPackageIdFromSlug(
@@ -207,7 +214,8 @@ function createPlugin(db: Knex) {
                 creation_date,
                 asset_hash,
                 readme,
-                readme_type
+                readme_type,
+                metafile
             } = await db("versions")
                 .where("id", id)
                 .first(
@@ -216,20 +224,22 @@ function createPlugin(db: Knex) {
                     "creation_date",
                     "asset_hash",
                     "readme",
-                    "readme_type"
+                    "readme_type",
+                    "metafile"
                 );
 
             const tags = await db("package_tags")
-                .where("version_id")
+                .where("version_id", id)
                 .select("tag");
 
             return {
                 slug,
                 description,
-                creationDate: creation_date,
+                creationDate: new Date(creation_date),
                 assetHash: asset_hash,
                 readme,
                 readmeType: readme_type,
+                metafile,
                 tags: tags.map(({tag}) => tag)
             };
         },
@@ -244,11 +254,44 @@ function createPlugin(db: Knex) {
                 packageId
             );
 
+            const id = uuid();
+
             await db("versions").insert({
+                id: id,
                 package_id: packageId,
                 creation_date: new Date(),
-                slug: version.slug
+                slug: version.slug,
+                description: version.description,
+                readme: version.readme,
+                readme_type: version.readmeType,
+                asset_hash: version.assetHash
             });
+
+            for (const tag of version.tags) {
+                const existingTag = await db("package_tags")
+                    .first("package_id")
+                    .where({
+                        package_id: packageId,
+                        tag
+                    });
+
+                if (existingTag) {
+                    await db("package_tags")
+                        .update({
+                            version_id: id
+                        })
+                        .where({
+                            package_id: packageId,
+                            tag
+                        });
+                } else {
+                    await db("package_tags").insert({
+                        package_id: packageId,
+                        tag,
+                        version_id: id
+                    });
+                }
+            }
         }
     });
 }

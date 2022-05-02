@@ -7,13 +7,14 @@
   "scripts": {
     "build": "tsup",
     "watch": "tsup --watch",
-    "migrate": "node dist/scripts/migrate.js"
+    "add-migration": "node scripts/add-migration.js"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.4.2",
     "@types/node": "^14.17",
     "@types/pino": "^6",
     "@types/uuid": "^8.3.4",
+    "launch-editor": "^2.3.0",
     "pino": "^7",
     "tsup": "^5.6.0",
     "typescript": "^4.6"

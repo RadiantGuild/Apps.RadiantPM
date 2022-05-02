@@ -3,16 +3,25 @@ import parseGithubUrl from "parse-github-url";
 import {Parameters} from "../Parameters";
 
 export function register(handler: SwitchedScopeHandler<Parameters>): void {
-    handler.register("package.view", {
+    handler.register("package.update", {
         async check({slug, feedSlug}, cfg, ctx) {
             try {
                 // check if the user can see a repo with the name from the slug
-                await ctx.gh.repos.get({
+                const repo = await ctx.gh.repos.get({
                     owner: feedSlug,
                     repo: slug
                 });
 
-                return {success: true};
+                if (repo.data.permissions?.push) {
+                    return {
+                        success: true
+                    };
+                } else {
+                    return {
+                        success: false,
+                        errorMessage: "User does not have permission to push to the repository"
+                    };
+                }
             } catch {
                 // check if the user can see the repository specified in the package info
 
@@ -70,14 +79,21 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                 }
 
                 try {
-                    await ctx.gh.repos.get({
+                    const repo = await ctx.gh.repos.get({
                         owner: feedSlug,
                         repo: githubUrl.name
                     });
 
-                    return {
-                        success: true
-                    };
+                    if (repo.data.permissions?.push) {
+                        return {
+                            success: true
+                        };
+                    } else {
+                        return {
+                            success: false,
+                            errorMessage: "User does not have permission to push to the repository"
+                        };
+                    }
                 } catch {
                     return {
                         success: false,

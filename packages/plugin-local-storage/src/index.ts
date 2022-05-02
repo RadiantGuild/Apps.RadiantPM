@@ -1,7 +1,7 @@
 import {ok as assert} from "assert";
 import {createReadStream, existsSync} from "fs";
-import {readFile, writeFile} from "fs/promises";
-import {join, resolve} from "path";
+import {mkdir, readFile, writeFile} from "fs/promises";
+import {dirname, join, resolve} from "path";
 import {createLogger} from "@radiantpm/log";
 import {
     fileCategories,
@@ -13,16 +13,19 @@ import {
     RoutedRequestContext,
     RouteMiddlewarePlugin
 } from "@radiantpm/plugin-utils";
-
 import {setError} from "@radiantpm/plugin-utils/req-utils";
+import hasha from "hasha";
 import urljoin from "url-join";
 import LocalStoragePluginConfig from "./LocalStoragePluginConfig";
 
 const logger = createLogger("plugin-local-storage");
 
 function getFilePath(hostPath: string, category: string, id: string) {
-    category = category.replace(/[^a-z]+/gi, "-");
-    id = id.replace(/[^a-z.]+/gi, "-");
+    if (!fileCategories.has(category as FileCategory)) {
+        throw new Error("Invalid file category");
+    }
+
+    id = id.replace(/[/-]+/gi, "-");
     return resolve(join(hostPath, category, id));
 }
 
@@ -95,16 +98,34 @@ class LocalStorageStoragePlugin implements StoragePlugin {
     async read(category: FileCategory, id: string): Promise<Buffer> {
         const physicalPath = getFilePath(this.config.hostPath, category, id);
 
+        if (!existsSync(physicalPath)) {
+            throw new Error("Asset does not exist");
+        }
+
         return await readFile(physicalPath);
     }
 
-    async write(
-        category: FileCategory,
-        id: string,
-        content: Buffer
-    ): Promise<void> {
+    async write(category: FileCategory, content: Buffer): Promise<string> {
+        const id = await hasha.async(content, {
+            algorithm: "sha256",
+            encoding: "hex"
+        });
+
         const physicalPath = getFilePath(this.config.hostPath, category, id);
+
+        await mkdir(dirname(physicalPath), {recursive: true});
         await writeFile(physicalPath, content);
+
+        return id;
+    }
+
+    async hash(
+        method: string,
+        category: FileCategory,
+        id: string
+    ): Promise<string> {
+        const physicalPath = getFilePath(this.config.hostPath, category, id);
+        return await hasha.fromFile(physicalPath, {algorithm: method});
     }
 }
 

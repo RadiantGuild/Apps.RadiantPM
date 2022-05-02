@@ -36,6 +36,7 @@ export async function onBeforeRender(
 
             const authResult = await authPlugin.check(accessToken, {
                 kind: "package.view",
+                feedSlug,
                 slug: pkg.slug
             });
 

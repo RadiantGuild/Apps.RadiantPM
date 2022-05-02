@@ -1,6 +1,10 @@
 import {HttpRequest} from "@radiantpm/plugin-types";
 
 export async function getText(req: HttpRequest): Promise<string> {
+    if (req.body.readableEnded) {
+        throw new Error("Cannot read from body after it has ended");
+    }
+
     const chunks: Buffer[] = [];
     req.body.on("data", data => chunks.push(data));
 

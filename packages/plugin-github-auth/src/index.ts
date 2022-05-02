@@ -2,8 +2,14 @@ import {Octokit} from "@octokit/rest";
 import {createLogger} from "@radiantpm/log";
 import {
     AuthenticationCheckResponse,
-    AuthenticationField, AuthenticationListValidResponse,
-    AuthenticationLoginChangedResponse, PluginExport,
+    AuthenticationField,
+    AuthenticationListValidResponse,
+    AuthenticationLoginChangedResponse,
+    DatabasePlugin,
+    EnvironmentMetadata,
+    MiddlewareError,
+    PackageHandlerPlugin,
+    PluginExport,
     Scope
 } from "@radiantpm/plugin-types";
 import {
@@ -18,9 +24,21 @@ import Configuration from "./types/Configuration";
 import AuthContext from "./utils/AuthContext";
 import {switchedScopeHandler} from "./utils/scope-handlers";
 
+const logger = createLogger("plugin-github-auth");
 const octokitLogger = createLogger("plugin-github-auth:octokit");
 
 const validTokenRegex = /^ghp_[A-Za-z\d]+$/;
+
+function getErrorMessage(err: unknown): string {
+    if (err instanceof Error && !(err as MiddlewareError).isMessageSensitive) {
+        return err.message;
+    } else {
+        return "Internal server error";
+    }
+}
+
+let dbPlugin: DatabasePlugin;
+let packageHandlers: PackageHandlerPlugin[];
 
 class GithubAuthPlugin implements AuthPlugin {
     private static readonly defaultOctokitOptions: Exclude<
@@ -50,7 +68,10 @@ class GithubAuthPlugin implements AuthPlugin {
 
     constructor(private readonly config: Configuration) {
         this.defaultOctokit = new Octokit({
-            ...(GithubAuthPlugin.defaultOctokitOptions as Record<string, unknown>),
+            ...(GithubAuthPlugin.defaultOctokitOptions as Record<
+                string,
+                unknown
+            >),
             auth: config.accessToken
         });
     }
@@ -61,17 +82,52 @@ class GithubAuthPlugin implements AuthPlugin {
     ): Promise<AuthenticationCheckResponse> {
         const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
-        const context = new AuthContext(octokit, authState);
+        const context = new AuthContext({
+            octokit,
+            dbPlugin,
+            authState,
+            packageHandlers
+        });
 
-        return await switchedScopeHandler.check(scope, this.config, context);
+        try {
+            return await switchedScopeHandler.check(
+                scope,
+                this.config,
+                context
+            );
+        } catch (err) {
+            return {
+                success: false,
+                errorMessage: getErrorMessage(err)
+            };
+        }
     }
 
-    async listValid(accessToken: string | null, scopeKind: Scope["kind"]): Promise<AuthenticationListValidResponse> {
+    async listValid(
+        accessToken: string | null,
+        scopeKind: Scope["kind"]
+    ): Promise<AuthenticationListValidResponse> {
         const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
-        const context = new AuthContext(octokit, authState);
+        const context = new AuthContext({
+            octokit,
+            dbPlugin,
+            authState,
+            packageHandlers
+        });
 
-        return await switchedScopeHandler.listValid(scopeKind, this.config, context);
+        try {
+            return await switchedScopeHandler.listValid(
+                scopeKind,
+                this.config,
+                context
+            );
+        } catch (err) {
+            return {
+                validObjects: [],
+                errorMessage: getErrorMessage(err)
+            };
+        }
     }
 
     getFields(): AuthenticationField[] {
@@ -154,8 +210,11 @@ class GithubAuthPlugin implements AuthPlugin {
     private getOctokit(accessToken?: string | null) {
         if (accessToken) {
             return new Octokit({
-                ...(GithubAuthPlugin.defaultOctokitOptions as Record<string, unknown>),
-                auth: accessToken,
+                ...(GithubAuthPlugin.defaultOctokitOptions as Record<
+                    string,
+                    unknown
+                >),
+                auth: accessToken
             });
         } else {
             return this.defaultOctokit;
@@ -168,12 +227,21 @@ class GithubAuthPlugin implements AuthPlugin {
                 isLoggedIn: false
             };
         } else {
-            const user = await octokit.rest.users.getAuthenticated();
+            try {
+                const user = await octokit.rest.users.getAuthenticated();
 
-            return {
-                isLoggedIn: true,
-                username: user.data.login
-            };
+                return {
+                    isLoggedIn: true,
+                    username: user.data.login
+                };
+            } catch (err) {
+                logger.trace(
+                    err,
+                    "Failed to check the user authentication status; counting as unauthenticated"
+                );
+
+                return {isLoggedIn: false};
+            }
         }
     }
 }
@@ -200,6 +268,13 @@ const pluginExport: PluginExport<Configuration, true> = {
     },
     init(config) {
         return createAuthPlugin(new GithubAuthPlugin(config));
+    },
+    onMetaLoaded(meta: EnvironmentMetadata) {
+        dbPlugin = meta.selectedPlugins.database;
+
+        packageHandlers = meta.plugins.filter(
+            pl => pl.type === "package-handler"
+        ) as PackageHandlerPlugin[];
     }
 };
 

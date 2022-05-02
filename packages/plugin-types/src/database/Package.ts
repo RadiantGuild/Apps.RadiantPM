@@ -39,4 +39,9 @@ export interface SimplePackage extends BasePackage {
     lastUpdated: Date | undefined;
 }
 
-export type Package = BasePackage;
+export interface Package extends BasePackage {
+    /**
+     * If the package has a source code repository, this is its URL
+     */
+    repository?: string;
+}

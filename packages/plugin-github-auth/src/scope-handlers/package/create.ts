@@ -3,45 +3,34 @@ import parseGithubUrl from "parse-github-url";
 import {Parameters} from "../Parameters";
 
 export function register(handler: SwitchedScopeHandler<Parameters>): void {
-    handler.register("package.view", {
-        async check({slug, feedSlug}, cfg, ctx) {
+    handler.register("package.create", {
+        async check({type, slug, feedSlug, repository}, cfg, ctx) {
             try {
-                // check if the user can see a repo with the name from the slug
-                await ctx.gh.repos.get({
+                // check if the user can push to a repo with the name from the slug
+                const repo = await ctx.gh.repos.get({
                     owner: feedSlug,
                     repo: slug
                 });
 
-                return {success: true};
-            } catch {
-                // check if the user can see the repository specified in the package info
-
-                const feedId = await ctx.db.getFeedIdFromSlug(feedSlug);
-
-                if (!feedId) {
+                if (repo.data.permissions?.push) {
+                    return {
+                        success: true
+                    };
+                } else {
                     return {
                         success: false,
-                        errorMessage: "Feed does not exist"
+                        errorMessage:
+                            "User does not have permission to push to the repository"
                     };
                 }
+            } catch (err) {
+                // check if the user can push to a repo with the name from the repository field
 
-                const packageId = await ctx.db.getPackageIdFromSlug(
-                    feedId,
-                    slug
-                );
-
-                if (!packageId) {
-                    return {
-                        success: false,
-                        errorMessage: "Package does not exist"
-                    };
-                }
-
-                const {repository} = await ctx.db.getPackageFromId(packageId);
                 if (!repository) {
                     return {
                         success: false,
-                        errorMessage: "Source repository is not visible"
+                        errorMessage:
+                            "Package does not have a repository and its name does not match a GitHub repository"
                     };
                 }
 
@@ -70,14 +59,22 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                 }
 
                 try {
-                    await ctx.gh.repos.get({
+                    const repo = await ctx.gh.repos.get({
                         owner: feedSlug,
                         repo: githubUrl.name
                     });
 
-                    return {
-                        success: true
-                    };
+                    if (repo.data.permissions?.push) {
+                        return {
+                            success: true
+                        };
+                    } else {
+                        return {
+                            success: false,
+                            errorMessage:
+                                "User does not have permission to push to the repository"
+                        };
+                    }
                 } catch {
                     return {
                         success: false,

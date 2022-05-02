@@ -11,7 +11,7 @@ type ApiEndpointPaths = {
 
 const endpoints: ApiEndpointPaths = {
     createFeed: getUrl("feeds"),
-    createPackage: getUrl("feeds/[feed_slug]/package")
+    createPackage: getUrl("feeds/[feed_slug]/packages")
 };
 
 export default endpoints;

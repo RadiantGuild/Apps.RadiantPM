@@ -19,9 +19,9 @@ type BaseEndpoint = ApiEndpoint<
 
 type HasParams<Endpoint extends BaseEndpoint> =
     RequiredParamsFromApiEndpoint<Endpoint> extends never
-        ? false
-        : OptionalParamsFromApiEndpoint<Endpoint> extends never
-        ? false
+        ? OptionalParamsFromApiEndpoint<Endpoint> extends never
+            ? false
+            : true
         : true;
 
 type ParamsObjectFromEndpoint<Endpoint extends BaseEndpoint> = {
