@@ -15,4 +15,9 @@ export default interface GcsStoragePluginConfig {
      * Not required when RadiantPM is running on GCP, as Google handles it automatically.
      */
     keyFilename?: string;
+
+    /**
+     * The base URL for requests. Must start with /. Defaults to `/-/storage/`.
+     */
+    baseUrl?: `/${string}`;
 }

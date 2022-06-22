@@ -36,6 +36,45 @@ importers:
       prettier: 2.3.2
       typescript: 4.6.2
 
+  examples/gcs-github/init:
+    specifiers:
+      '@radiantpm/runtime-bootstrap': workspace:*
+      '@radiantpm/runtime-standard-backend': workspace:*
+      '@radiantpm/runtime-standard-plugin-loader': workspace:*
+      '@radiantpm/runtime-standard-plugin-selector': workspace:*
+      pino-pretty: ^7.6.0
+    dependencies:
+      '@radiantpm/runtime-bootstrap': link:../../../packages/runtime-bootstrap
+      '@radiantpm/runtime-standard-backend': link:../../../packages/runtime-standard-backend
+      '@radiantpm/runtime-standard-plugin-loader': link:../../../packages/runtime-standard-plugin-loader
+      '@radiantpm/runtime-standard-plugin-selector': link:../../../packages/runtime-standard-plugin-selector
+    devDependencies:
+      pino-pretty: 7.6.0
+
+  examples/gcs-github/plugins:
+    specifiers:
+      '@radiantpm/plugin-api-frontend': workspace:^0.1.0
+      '@radiantpm/plugin-default-response': workspace:^0.1.0
+      '@radiantpm/plugin-error-handler': workspace:^0.1.0
+      '@radiantpm/plugin-gcs-storage': workspace:^0.1.0
+      '@radiantpm/plugin-github-auth': workspace:^0.1.0
+      '@radiantpm/plugin-knex-database': workspace:^0.1.0
+      '@radiantpm/plugin-local-storage': workspace:^0.1.0
+      '@radiantpm/plugin-npm': workspace:^0.1.0
+      '@radiantpm/plugin-standard-frontend': workspace:^0.1.0
+      '@radiantpm/plugin-standard-validator': workspace:^0.1.0
+    dependencies:
+      '@radiantpm/plugin-api-frontend': link:../../../packages/plugin-api-frontend
+      '@radiantpm/plugin-default-response': link:../../../packages/plugin-default-response
+      '@radiantpm/plugin-error-handler': link:../../../packages/plugin-error-handler
+      '@radiantpm/plugin-gcs-storage': link:../../../packages/plugin-gcs-storage
+      '@radiantpm/plugin-github-auth': link:../../../packages/plugin-github-auth
+      '@radiantpm/plugin-knex-database': link:../../../packages/plugin-knex-database
+      '@radiantpm/plugin-local-storage': link:../../../packages/plugin-local-storage
+      '@radiantpm/plugin-npm': link:../../../packages/plugin-npm
+      '@radiantpm/plugin-standard-frontend': link:../../../packages/plugin-standard-frontend
+      '@radiantpm/plugin-standard-validator': link:../../../packages/plugin-standard-validator
+
   examples/local-github/init:
     specifiers:
       '@radiantpm/runtime-bootstrap': workspace:*
@@ -213,12 +252,14 @@ importers:
       pino: ^7
       tsup: ^5.6.0
       typescript: ^4.6
+      url-join: ^4.0.1
     dependencies:
       '@google-cloud/storage': 6.1.0
       '@radiantpm/plugin-error-handler': link:../plugin-error-handler
       '@radiantpm/plugin-types': link:../plugin-types
       '@radiantpm/plugin-utils': link:../plugin-utils
       hasha: 5.2.2
+      url-join: 4.0.1
     devDependencies:
       '@types/node': 14.17.21
       '@types/pino': 6.3.11
@@ -2878,7 +2919,7 @@ packages:
     dev: true
 
   /color-name/1.1.3:
-    resolution: {integrity: sha1-p9BVi9icQveV3UIyj3QIMcpTvCU=}
+    resolution: {integrity: sha512-72fSenhMw2HZMTVHeCA9KCmpEIbzWiQsjN+BHcBbS9vr1mtt+vJjPdksIBNUmKAW8TFUDPJK5SUU3QhE9NEXDw==}
 
   /color-name/1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
@@ -3968,7 +4009,7 @@ packages:
     dev: false
 
   /escape-string-regexp/1.0.5:
-    resolution: {integrity: sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=}
+    resolution: {integrity: sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==}
     engines: {node: '>=0.8.0'}
 
   /escape-string-regexp/2.0.0:
@@ -4816,7 +4857,7 @@ packages:
     dev: true
 
   /has-flag/3.0.0:
-    resolution: {integrity: sha1-tdRU3CGZriJWmfNGfloH87lVuv0=}
+    resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}
     engines: {node: '>=4'}
 
   /has-flag/4.0.0:
@@ -5553,7 +5594,7 @@ packages:
     dev: true
 
   /leven/2.1.0:
-    resolution: {integrity: sha1-wuep93IJTe6dNCAq6KzORoeHVYA=}
+    resolution: {integrity: sha512-nvVPLpIHUxCUoRLrFqTgSxXJ614d8AgQoWl7zPe/2VadE8+1dpU3LBhowRuBAcuwruWtOdD8oYC9jDNJjXDPyA==}
     engines: {node: '>=0.10.0'}
     dev: true
 

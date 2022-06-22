@@ -14,7 +14,10 @@ import {
 } from "@radiantpm/plugin-utils";
 import {setError} from "@radiantpm/plugin-utils/req-utils";
 import hasha from "hasha";
+import urljoin from "url-join";
 import GcsStoragePluginConfig from "./GcsStoragePluginConfig";
+
+const DEFAULT_BASE_URL = "/-/storage/";
 
 class GcsHandler {
     readonly bucket: Bucket;
@@ -42,7 +45,7 @@ class GcsHandler {
         const [exists] = await file.exists();
 
         if (!exists) {
-            throw new HttpError(404, "Asset does not exist");
+            throw new HttpError(404, `${category} asset does not exist`);
         }
 
         return file;
@@ -53,7 +56,13 @@ class FileRouteHandler extends RouteMiddlewarePlugin {
     private readonly gcs: GcsHandler;
 
     constructor(config: GcsStoragePluginConfig) {
-        super(`GET /-/storage/[category]/[id]`);
+        const url = urljoin(
+            config.baseUrl ?? DEFAULT_BASE_URL,
+            "[category]",
+            "[id]"
+        ) as `/${string}`;
+
+        super(`GET ${url}`);
         this.gcs = new GcsHandler(config);
     }
 
@@ -88,12 +97,17 @@ class GcsStoragePlugin implements StoragePlugin {
     readonly type = "storage";
     readonly id = "storage-plugin";
 
-    readonly assetUrl = "/-/storage/[category]/[id]";
+    readonly assetUrl: string;
 
     private readonly gcs: GcsHandler;
 
     constructor(config: GcsStoragePluginConfig) {
         this.gcs = new GcsHandler(config);
+        this.assetUrl = urljoin(
+            config.baseUrl ?? DEFAULT_BASE_URL,
+            "[category]",
+            "[id]"
+        );
     }
 
     async read(category: FileCategory, id: string): Promise<Buffer> {
@@ -139,6 +153,11 @@ const pluginExport: PluginExport<GcsStoragePluginConfig, true> = {
             },
             keyFilename: {
                 type: "string",
+                nullable: true
+            },
+            baseUrl: {
+                type: "string",
+                pattern: "^\\/",
                 nullable: true
             }
         }

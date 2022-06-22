@@ -20,7 +20,8 @@
     "@radiantpm/plugin-error-handler": "workspace:^0.1.0",
     "@radiantpm/plugin-types": "workspace:^0.1.0",
     "@radiantpm/plugin-utils": "workspace:^0.1.0",
-    "hasha": "^5.2.2"
+    "hasha": "^5.2.2",
+    "url-join": "^4.0.1"
   },
   "peerDependencies": {
     "pino": "^7"
