@@ -124,9 +124,7 @@ class GcsStoragePlugin implements StoragePlugin {
 
         const path = this.gcs.getFilePath(category, id);
         const file = this.gcs.bucket.file(path);
-        await file.save(content, {
-            predefinedAcl: "projectPrivate"
-        });
+        await file.save(content);
 
         return id;
     }
