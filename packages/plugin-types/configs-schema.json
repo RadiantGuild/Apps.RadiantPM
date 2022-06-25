@@ -220,6 +220,33 @@
           }
         }
       }
+    },
+    "@radiantpm/plugin-gcs-storage": {
+      "type": "object",
+      "required": ["bucketName"],
+      "properties": {
+        "bucketName": {
+          "type": "string",
+          "description": "The name of the bucket to put the files"
+        },
+        "bucketBasePath": {
+          "type": "string",
+          "nullable": true,
+          "description": "The base directory of any uploaded objects"
+        },
+        "keyFilename": {
+          "type": "string",
+          "nullable": true,
+          "description": "The path to the key.json file used to authenticate with GCS.\n\nNot required when RadiantPM is running on GCP, as Google handles it automatically."
+        },
+        "baseUrl": {
+          "type": "string",
+          "description": "The base URL for requests",
+          "default": "/-/storage/",
+          "pattern": "^\/",
+          "nullable": true
+        }
+      }
     }
   },
   "title": "configs",
