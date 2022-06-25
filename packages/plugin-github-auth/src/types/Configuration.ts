@@ -1,4 +1,4 @@
 export default interface Configuration {
-    accessToken: string;
+    accessTokenFilename: string;
     feedCreators: string[];
 }
