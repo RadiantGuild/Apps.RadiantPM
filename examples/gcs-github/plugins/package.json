@@ -1,5 +1,5 @@
 {
-  "name": "@example-plugin-store/local-gitlab",
+  "name": "@example-plugin-store/gcs-github",
   "version": "1.0.0",
   "dependencies": {
     "@radiantpm/plugin-api-frontend": "workspace:^0.1.0",
