@@ -1,0 +1,37 @@
+{
+  "$schema": "../../packages/plugin-types/configs-schema.json",
+  "@radiantpm/plugin-local-storage": {
+    "hostPath": "../storage",
+    "baseUrl": "/-/storage/local/"
+  },
+  "@radiantpm/plugin-standard-frontend": {
+    "favicon": {
+      "light": "logo.svg",
+      "dark": "logo.svg",
+      "default": "logo.svg"
+    },
+    "logo": {
+      "light": "logo.svg",
+      "dark": "logo.svg"
+    },
+    "logoText": {
+      "light": "logo-text-light.svg",
+      "dark": "logo-text-dark.svg"
+    }
+  },
+  "@radiantpm/plugin-knex-database": {
+    "db": {
+      "client": "sqlite",
+      "path": "../storage/database.sqlite"
+    }
+  },
+  "@radiantpm/plugin-github-auth": {
+    "accessToken": "(Enter a GitHub access token)",
+    "feedCreators": ["(Enter a GitHub username)"]
+  },
+  "@radiantpm/plugin-gcs-storage": {
+    "bucketName": "(Enter the name of the GCS bucket)",
+    "keyFilename": "(Enter the path to the key file)",
+    "baseUrl": "/-/storage/gcs/"
+  }
+}
