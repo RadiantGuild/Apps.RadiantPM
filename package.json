@@ -1,6 +1,9 @@
 {
   "name": "@radiantguild/radiantpm",
   "private": true,
+  "scripts": {
+    "release": "pnpm m run build && changeset publish"
+  },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
     "@changesets/changelog-github": "^0.4.5",
@@ -19,7 +22,5 @@
     "prettier": "^2.3.2",
     "typescript": "^4.6"
   },
-  "volta": {
-    "node": "16.14.0"
-  }
+  "packageManager": "pnpm@7.3.0"
 }
