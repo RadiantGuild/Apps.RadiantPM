@@ -214,6 +214,8 @@ const pluginExport: PluginExport<never, false> = {
                         );
                     }
 
+                    const feed = await dbPlugin.getFeedFromId(feedId);
+
                     const canViewPackage = await authPlugin.check(accessToken, {
                         kind: "package.view",
                         feedSlug,
@@ -323,7 +325,7 @@ const pluginExport: PluginExport<never, false> = {
                     );
 
                     const baseInfo = {
-                        name: pkg.name,
+                        name: `@${feed.slug}/${pkg.slug}`,
                         description: pkg.description,
                         readme: latestVersion.readme
                     };

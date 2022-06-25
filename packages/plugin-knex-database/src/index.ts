@@ -264,7 +264,8 @@ function createPlugin(db: Knex) {
                 description: version.description,
                 readme: version.readme,
                 readme_type: version.readmeType,
-                asset_hash: version.assetHash
+                asset_hash: version.assetHash,
+                metafile: version.metafile
             });
 
             for (const tag of version.tags) {
