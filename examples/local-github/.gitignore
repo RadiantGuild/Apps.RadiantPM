@@ -4,3 +4,5 @@ plugin-configs.json
 # automatically generated
 storage/database.sqlite
 storage/pkg
+
+secrets

@@ -33,7 +33,7 @@
     }
   },
   "@radiantpm/plugin-github-auth": {
-    "accessToken": "(Enter a GitHub access token)",
+    "accessTokenFilename": "../secrets/github-pat.txt",
     "feedCreators": ["(Enter a GitHub username)"]
   }
 }

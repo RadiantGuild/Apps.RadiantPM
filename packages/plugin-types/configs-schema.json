@@ -204,13 +204,13 @@
     "@radiantpm/plugin-github-auth": {
       "type": "object",
       "required": [
-        "accessToken",
+        "accessTokenFilename",
         "feedCreators"
       ],
       "properties": {
-        "accessToken": {
+        "accessTokenFilename": {
           "type": "string",
-          "description": "Github access token (no scopes required) to use for auth checks for users that aren't logged in"
+          "description": "Path to a file with the Github access token (no scopes required) to use for auth checks for users that aren't logged in"
         },
         "feedCreators": {
           "type": "array",
