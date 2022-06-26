@@ -9,12 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      # https://github.com/actions/setup-node/issues/67#issuecomment-833764503
+      - name: Prepare .npmrc
+        run: envsubst < .npmrc.ci > .npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-          registry-url: 'https://npm.pkg.github.com'
       - run: corepack enable
       - run: pnpm install
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
       - run: pnpm m run build
