@@ -1,5 +1,5 @@
 import {SerialisableAuthenticationPlugin} from "../authentication";
-import {Feed, Package, SerialisableDatabasePlugin} from "../database";
+import {Feed, Package} from "../database";
 import {FileCategory, SerialisableStoragePlugin} from "../storage";
 import {SerialisableValidationPlugin} from "../validation";
 import {ApiEndpoint} from "./ApiEndpoint";
@@ -84,7 +84,6 @@ export interface ApiEndpoints {
 export default interface WellKnownData {
     plugins: {
         authentication: SerialisableAuthenticationPlugin;
-        database: SerialisableDatabasePlugin;
         storage: {
             [Category in FileCategory]?: SerialisableStoragePlugin;
         };
