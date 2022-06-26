@@ -61,6 +61,8 @@ export default interface DatabasePlugin extends PluginBase<"database"> {
 
     listFeeds(): Promise<readonly SimpleFeed[]>;
 
+    hasFeedWithSlug(slug: string): Promise<boolean>;
+
     getFeedIdFromSlug(slug: string): Promise<string | undefined>;
 
     getFeedFromId(id: string): Promise<Feed>;

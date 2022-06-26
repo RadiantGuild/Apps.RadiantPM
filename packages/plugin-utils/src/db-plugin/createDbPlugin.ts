@@ -63,6 +63,10 @@ class DbDatabasePlugin implements DatabasePlugin {
         return this.plugin.listFeeds();
     }
 
+    hasFeedWithSlug(slug: string) {
+        return this.plugin.hasFeedWithSlug(slug);
+    }
+
     getFeedIdFromSlug(slug: string) {
         return this.plugin.getFeedIdFromSlug(slug);
     }
