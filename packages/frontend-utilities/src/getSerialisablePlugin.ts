@@ -1,6 +1,6 @@
 import {
-    AuthenticationPlugin, DatabasePlugin,
-    SerialisableAuthenticationPlugin, SerialisableDatabasePlugin,
+    AuthenticationPlugin,
+    SerialisableAuthenticationPlugin,
     SerialisableStoragePlugin,
     SerialisableValidationPlugin,
     StoragePlugin,
@@ -15,19 +15,6 @@ function getSerialisableStoragePlugin(
         type: plugin.type,
         id: plugin.id,
         assetUrl: plugin.assetUrl
-    };
-}
-
-function getSerialisableDatabasePlugin(plugin: DatabasePlugin): SerialisableDatabasePlugin {
-    return {
-        type: plugin.type,
-        id: plugin.id,
-        getPackageUrl: plugin.getPackageUrl,
-        listFeedsUrl: plugin.listFeedsUrl,
-        getFeedUrl: plugin.getFeedUrl,
-        getVersionUrl: plugin.getVersionUrl,
-        listPackagesFromFeedUrl: plugin.listPackagesFromFeedUrl,
-        listVersionsFromPackageUrl: plugin.listVersionsFromPackageUrl
     };
 }
 
@@ -68,13 +55,11 @@ function getSerialisableValidationPlugin(
 
 type SupportedPluginTypes =
     | AuthenticationPlugin
-    | DatabasePlugin
     | StoragePlugin
     | ValidationPlugin;
 
 type SupportedSerialisablePluginTypes =
     | SerialisableAuthenticationPlugin
-    | SerialisableDatabasePlugin
     | SerialisableStoragePlugin
     | SerialisableValidationPlugin;
 
@@ -92,8 +77,6 @@ export default function getSerialisablePlugin<
             return getSerialisableAuthenticationPlugin(
                 plugin as AuthenticationPlugin
             ) as ChosenSerialisablePlugin<Type>;
-        case "database":
-            return getSerialisableDatabasePlugin(plugin as DatabasePlugin) as ChosenSerialisablePlugin<Type>;
         case "storage":
             return getSerialisableStoragePlugin(
                 plugin as StoragePlugin
