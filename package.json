@@ -1,5 +1,4 @@
 {
-  "name": "@radiantguild/radiantpm",
   "private": true,
   "scripts": {
     "release": "pnpm m run build && changeset publish"

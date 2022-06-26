@@ -1,5 +1,4 @@
 {
-  "name": "@example-plugin-store/local-github",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
