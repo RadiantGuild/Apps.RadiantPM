@@ -1,5 +1,5 @@
 {
-  "name": "local-gitlab",
+  "name": "gcs-github",
   "version": "1.0.0",
   "type": "module",
   "scripts": {

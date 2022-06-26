@@ -13,7 +13,8 @@
     "@types/pino": "^6",
     "pino": "^7",
     "rollup": "^2",
-    "rollup-plugin-ts": "^2"
+    "rollup-plugin-ts": "^2",
+    "typescript": "^4.6"
   },
   "dependencies": {
     "@radiantpm/log": "workspace:^0.1.0",

@@ -52,6 +52,18 @@ function createPlugin(db: Knex) {
             }));
         },
 
+        async hasFeedWithSlug(slug: string): Promise<boolean> {
+            queryLogger.trace("Checking if there is a feed with slug %s", slug);
+
+            const {count} = await db("feeds")
+                .where({slug})
+                .count<{count: number}>({
+                    count: "*"
+                });
+
+            return count > 0;
+        },
+
         async getFeedFromId(id: string): Promise<Feed> {
             queryLogger.trace("Getting feed by ID %s", id);
 
