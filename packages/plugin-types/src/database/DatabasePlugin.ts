@@ -9,56 +9,6 @@ export default interface DatabasePlugin extends PluginBase<"database"> {
      */
     id: string;
 
-    /**
-     * A GET request to this URL should return a `ListFeedsResponse`
-     */
-    listFeedsUrl: string;
-
-    /**
-     * A GET request to this URL should return a `Feed`
-     *
-     * ## Parameters:
-     * - `feed_slug`: the feed's slug
-     */
-    getFeedUrl: string;
-
-    /**
-     * A GET request to this URL should return a `ListPackagesResponse`
-     *
-     * ## Parameters:
-     * - `feed_slug`: the feed's slug
-     */
-    listPackagesFromFeedUrl: string;
-
-    /**
-     * A GET request to this URL should return a `Package`
-     *
-     * ## Parameters:
-     * - `feed_slug`: the slug of the feed that contains this package
-     * - `package_slug`: the slug of this package
-     */
-    getPackageUrl: string;
-
-    /**
-     * A GET request to this URL should return a `ListVersionsResponse`
-     *
-     *
-     * ## Parameters:
-     * - `feed_slug`: the slug of the feed that contains the package that the versions are from
-     * - `package_slug`: the slug of the package
-     */
-    listVersionsFromPackageUrl: string;
-
-    /**
-     * A GET request to this URL should return a `Version`
-     *
-     * ## Parametesr:
-     * - `feed_slug`: the slug of the feed that contains the package that has the version
-     * - `package_slug`: the slug of the package that has the version
-     * - `version`: the version number to request
-     */
-    getVersionUrl: string;
-
     listFeeds(): Promise<readonly SimpleFeed[]>;
 
     hasFeedWithSlug(slug: string): Promise<boolean>;
