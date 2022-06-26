@@ -1,6 +1,7 @@
 {
   "name": "@example-plugin-store/local-github",
   "version": "1.0.0",
+  "private": true,
   "dependencies": {
     "@radiantpm/plugin-api-frontend": "workspace:^0.1.0",
     "@radiantpm/plugin-default-response": "workspace:^0.1.0",
