@@ -8,6 +8,10 @@
     "build": "tsup src/index.ts",
     "watch": "tsup src/index.ts --watch"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/radiantpm/radiantpm"
+  },
   "devDependencies": {
     "@types/node": "^16",
     "@types/url-join": "^4.0.1",

@@ -9,6 +9,10 @@
     "watch": "tsup --watch",
     "add-migration": "node scripts/add-migration.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/radiantpm/radiantpm"
+  },
   "devDependencies": {
     "@types/better-sqlite3": "^7.4.2",
     "@types/node": "^14.17",

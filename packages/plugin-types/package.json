@@ -8,6 +8,10 @@
     "build": "tsup",
     "watch": "tsup --watch"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/radiantpm/radiantpm"
+  },
   "dependencies": {
     "ajv": "^8.6.3"
   },

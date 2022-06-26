@@ -8,6 +8,10 @@
     "build": "rollup -c",
     "watch": "rollup -wc"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/radiantpm/radiantpm"
+  },
   "dependencies": {
     "@radiantpm/log": "workspace:^0.1.0",
     "@radiantpm/plugin-types": "workspace:^0.1.0",
