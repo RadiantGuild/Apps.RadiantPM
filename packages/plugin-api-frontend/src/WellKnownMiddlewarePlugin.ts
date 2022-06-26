@@ -29,10 +29,6 @@ export default class WellKnownMiddlewarePlugin extends RouteMiddlewarePlugin {
             metadata.selectedPlugins.authentication
         );
 
-        wellKnownData.plugins.database = getSerialisablePlugin(
-            metadata.selectedPlugins.database
-        );
-
         wellKnownData.plugins.validation = getSerialisablePlugin(
             metadata.selectedPlugins.validation
         );
