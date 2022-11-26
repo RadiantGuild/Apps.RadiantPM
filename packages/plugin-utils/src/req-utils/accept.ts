@@ -34,6 +34,7 @@ export class Accept {
     }
 
     private static parse(value: string): Item[] {
+        if (!value) return [];
         return value.split(",").map(v => Accept.parseItem(v));
     }
 

@@ -1,4 +1,4 @@
-import {HeadersHttpResponse, HttpRequest} from "@radiantpm/plugin-types";
+import {BodyHttpResponse, HeadersHttpResponse, HttpRequest} from "@radiantpm/plugin-types";
 
 const cookiesContext = Symbol("req-utils:header:cookiesContext");
 
@@ -234,4 +234,15 @@ export function getCookie(
 
     const parsedCookies = parseCookies(src.headers.getAll("cookie"));
     return parsedCookies.get(name);
+}
+
+/**
+ * Redirects the user to the URL or path provided.
+ * @param src HTTP response to set the redirection information on.
+ * @param url The URL or path that the user should be redirected to.
+ * @param permanent Whether or not to cache the redirection.
+ */
+export async function redirect(src: HeadersHttpResponse, url: string | URL, permanent = false): Promise<BodyHttpResponse> {
+    src.headers.set("location", url.toString());
+    return await src.flushHeaders(permanent ? 308 : 307);
 }

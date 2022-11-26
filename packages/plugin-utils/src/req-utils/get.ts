@@ -1,6 +1,6 @@
 import {HttpRequest} from "@radiantpm/plugin-types";
 
-export async function getText(req: HttpRequest): Promise<string> {
+export async function getBuffer(req: HttpRequest): Promise<Buffer> {
     if (req.body.readableEnded) {
         throw new Error("Cannot read from body after it has ended");
     }
@@ -13,7 +13,12 @@ export async function getText(req: HttpRequest): Promise<string> {
         req.body.on("error", nay);
     });
 
-    return Buffer.concat(chunks).toString();
+    return Buffer.concat(chunks);
+}
+
+export async function getText(req: HttpRequest): Promise<string> {
+    const buffer = await getBuffer(req);
+    return buffer.toString();
 }
 
 export async function getJson<T>(req: HttpRequest): Promise<T> {
