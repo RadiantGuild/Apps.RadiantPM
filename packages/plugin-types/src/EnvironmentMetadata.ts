@@ -3,6 +3,7 @@ import {AuthenticationPlugin} from "./authentication";
 import {DatabasePlugin} from "./database";
 import {FileCategory, StoragePlugin} from "./storage";
 import {ValidationPlugin} from "./validation";
+import {CachePlugin} from "./cache";
 
 export interface RuntimeMetadata {
     /**
@@ -41,6 +42,7 @@ export interface SelectedPlugins {
         [Category in FileCategory]: StoragePlugin;
     };
     validation: ValidationPlugin;
+    cache: CachePlugin;
 }
 
 export default interface EnvironmentMetadata {
