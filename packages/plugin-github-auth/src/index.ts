@@ -7,6 +7,9 @@ import {
     AuthenticationField,
     AuthenticationListValidResponse,
     AuthenticationLoginChangedResponse,
+    BasicUserInfo,
+    CachePlugin,
+    CacheSetOptions,
     DatabasePlugin,
     EnvironmentMetadata,
     MiddlewareError,
@@ -20,6 +23,9 @@ import {
     createAuthPlugin
 } from "@radiantpm/plugin-utils";
 import {SameSite, SetCookieOptions} from "@radiantpm/plugin-utils/req-utils";
+import Cryptr from "cryptr";
+import hasha from "hasha";
+import objectHash from "object-hash";
 import {name, version} from "../package.json";
 import {AuthState} from "./types/AuthState";
 import Configuration from "./types/Configuration";
@@ -39,7 +45,50 @@ function getErrorMessage(err: unknown): string {
     }
 }
 
+function getAccessTokenKey(accessToken: string | null) {
+    return accessToken === null ? "##NULL##" : "##TOKEN##" + accessToken;
+}
+
+function getCacheKey(
+    action: string,
+    accessToken: string | null,
+    scope: Parameters<typeof objectHash>[0]
+) {
+    const tokenKey = getAccessTokenKey(accessToken);
+
+    const accessTokenHash = hasha(tokenKey);
+    const scopeHash = objectHash(scope);
+
+    return `gh-auth.scope-${action}.${accessTokenHash}.${scopeHash}`;
+}
+
+async function writeEncryptedCacheValue(
+    cacheKey: string,
+    accessToken: string | null,
+    valueToWrite: string,
+    options?: CacheSetOptions
+): Promise<void> {
+    const tokenKey = getAccessTokenKey(accessToken);
+    const cryptr = new Cryptr(tokenKey);
+    const encrypted = cryptr.encrypt(valueToWrite);
+    const bufferFromEncrypted = Buffer.from(encrypted, "hex");
+    await cachePlugin.set(cacheKey, bufferFromEncrypted, options);
+}
+
+async function readEncryptedCacheValue(
+    cacheKey: string,
+    accessToken: string | null
+): Promise<string | null> {
+    const tokenKey = getAccessTokenKey(accessToken);
+    const cryptr = new Cryptr(tokenKey);
+    const cachedBuffer = await cachePlugin.get(cacheKey);
+    if (!cachedBuffer) return null;
+
+    return cryptr.decrypt(cachedBuffer.toString("hex"));
+}
+
 let dbPlugin: DatabasePlugin;
+let cachePlugin: CachePlugin;
 let packageHandlers: PackageHandlerPlugin[];
 
 interface OctokitMetadata {
@@ -80,6 +129,17 @@ class GithubAuthPlugin implements AuthPlugin {
         accessToken: string | null,
         scope: Scope
     ): Promise<AuthenticationCheckResponse> {
+        const cacheKey = getCacheKey("check", accessToken, scope);
+        const existingResult = await readEncryptedCacheValue(
+            cacheKey,
+            accessToken
+        );
+
+        if (existingResult) {
+            logger.debug("Cache hit for scope check");
+            return JSON.parse(existingResult);
+        }
+
         const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
         const context = new AuthContext({
@@ -89,24 +149,52 @@ class GithubAuthPlugin implements AuthPlugin {
             packageHandlers
         });
 
+        let result: AuthenticationCheckResponse;
+
         try {
-            return await switchedScopeHandler.check(
+            result = await switchedScopeHandler.check(
                 scope,
                 this.config,
                 context
             );
         } catch (err) {
-            return {
+            result = {
                 success: false,
                 errorMessage: getErrorMessage(err)
             };
         }
+
+        logger.debug("Cache miss for scope check");
+
+        await writeEncryptedCacheValue(
+            cacheKey,
+            accessToken,
+            JSON.stringify(result),
+            {
+                expireInSeconds: 600
+            }
+        );
+
+        return result;
     }
 
     async listValid(
         accessToken: string | null,
         scopeKind: Scope["kind"]
     ): Promise<AuthenticationListValidResponse> {
+        const cacheKey = getCacheKey("list-valid", accessToken, {
+            kind: scopeKind
+        });
+        const existingResult = await readEncryptedCacheValue(
+            cacheKey,
+            accessToken
+        );
+
+        if (existingResult) {
+            logger.debug("Cache hit for valid list");
+            return JSON.parse(existingResult);
+        }
+
         const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
         const context = new AuthContext({
@@ -116,18 +204,33 @@ class GithubAuthPlugin implements AuthPlugin {
             packageHandlers
         });
 
+        let result: AuthenticationListValidResponse;
+
         try {
-            return await switchedScopeHandler.listValid(
+            result = await switchedScopeHandler.listValid(
                 scopeKind,
                 this.config,
                 context
             );
         } catch (err) {
-            return {
+            result = {
                 validObjects: [],
                 errorMessage: getErrorMessage(err)
             };
         }
+
+        logger.debug("Cache miss for valid list");
+
+        await writeEncryptedCacheValue(
+            cacheKey,
+            accessToken,
+            JSON.stringify(result),
+            {
+                expireInSeconds: 600
+            }
+        );
+
+        return result;
     }
 
     checkAccessTokenValidity(accessToken: string): boolean {
@@ -209,6 +312,19 @@ class GithubAuthPlugin implements AuthPlugin {
 
         return {
             valid: true
+        };
+    }
+
+    async getBasicUserInfo(accessToken: string): Promise<BasicUserInfo> {
+        const octokit = await this.getOctokit(accessToken);
+        const user = await octokit.users.getAuthenticated();
+
+        return {
+            displayIdentifier: user.data.email ?? user.data.login,
+            email: user.data.email ?? undefined,
+            displayName: user.data.name ?? undefined,
+            username: user.data.login,
+            id: user.data.id.toString()
         };
     }
 
@@ -312,6 +428,7 @@ const pluginExport: PluginExport<Configuration, true> = {
     },
     onMetaLoaded(meta: EnvironmentMetadata) {
         dbPlugin = meta.selectedPlugins.database;
+        cachePlugin = meta.selectedPlugins.cache;
 
         packageHandlers = meta.plugins.filter(
             pl => pl.type === "package-handler"

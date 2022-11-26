@@ -14,7 +14,9 @@
   },
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
+    "@types/cryptr": "^4.0.1",
     "@types/node": "^14.17",
+    "@types/object-hash": "^2.2.1",
     "@types/parse-github-url": "^1.0.0",
     "@types/pino": "^6",
     "pino": "^7",
@@ -27,6 +29,9 @@
     "@radiantpm/log": "workspace:^0.1.0",
     "@radiantpm/plugin-types": "workspace:^0.1.0",
     "@radiantpm/plugin-utils": "workspace:^0.1.0",
+    "cryptr": "^6.0.3",
+    "hasha": "^5.2.2",
+    "object-hash": "^3.0.0",
     "parse-github-url": "^1.0.2"
   },
   "peerDependencies": {
