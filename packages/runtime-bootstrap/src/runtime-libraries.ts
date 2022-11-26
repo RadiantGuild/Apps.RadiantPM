@@ -1,9 +1,11 @@
 import {
     AuthenticationPlugin,
+    CachePlugin,
     DatabasePlugin,
     FileCategory,
     RuntimeMetadata,
-    StoragePlugin, ValidationPlugin
+    StoragePlugin,
+    ValidationPlugin
 } from "@radiantpm/plugin-types";
 import Context from "./Context";
 import ContextWithPlugins from "./ContextWithPlugins";
@@ -91,7 +93,11 @@ export interface PluginSelector extends RuntimeLibrary {
      * Returns the validation plugin that the application will use
      * @param context Context specific to this runtime library, and some useful methods
      */
-    selectValidationPlugin(context: ContextWithPlugins): Promise<ValidationPlugin>;
+    selectValidationPlugin(
+        context: ContextWithPlugins
+    ): Promise<ValidationPlugin>;
+
+    selectCachePlugin(context: ContextWithPlugins): Promise<CachePlugin>;
 }
 
 export interface Backend extends RuntimeLibrary {

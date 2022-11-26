@@ -5,7 +5,7 @@ import {
     MiddlewarePlugin,
     Plugin,
     StoragePlugin, ValidationPlugin
-} from "@radiantpm/plugin-types";
+,CachePlugin} from "@radiantpm/plugin-types";
 import Context from "./Context";
 
 export default interface ContextWithPlugins extends Context {
@@ -46,6 +46,12 @@ export default interface ContextWithPlugins extends Context {
      * Throws an error if there is no export with the provided name, or the export does not provide an authentication plugin.
      */
     getValidationPlugin(exportName: string): ValidationPlugin;
+
+    /**
+     * Returns the cache plugin that an export with the specified name provides.
+     * Throws an error if there is no export with the provided name, or the export does not provide a validation plugin.
+     */
+    getCachePlugin(exportName: string): CachePlugin;
 
     /**
      * Returns the name of the `PluginExport` that owns this plugin
