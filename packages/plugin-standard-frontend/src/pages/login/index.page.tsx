@@ -56,11 +56,17 @@ function useLogInCallback(fields: Record<string, string>) {
 
 export interface LoginPageProps {
     authDisplayName: string;
+    ssoDisplayName?: string;
     fields: AuthenticationField[];
 }
 
-function LoginForm({authDisplayName, fields}: LoginPageProps): ReactElement {
+function LoginForm({
+    authDisplayName,
+    ssoDisplayName,
+    fields
+}: LoginPageProps): ReactElement {
     const form = useFormButtons();
+    const {navigate} = usePageContext();
 
     const {execute: doSubmit} = useLogInCallback(form.values);
 
@@ -70,15 +76,28 @@ function LoginForm({authDisplayName, fields}: LoginPageProps): ReactElement {
         const url = new URL(location.href);
         const returnUrl = url.searchParams.get("return") ?? "/";
 
-        if (result.success) location.assign(returnUrl);
-    }, [doSubmit]);
+        if (result.success) {
+            if (ssoDisplayName) {
+                const confirmUrl = new URL("/login/confirm", location.href);
+                confirmUrl.searchParams.set("app", ssoDisplayName);
+                confirmUrl.searchParams.set("return", returnUrl);
+                location.assign(confirmUrl.toString());
+            } else {
+                location.assign(returnUrl);
+            }
+        }
+    }, [doSubmit, navigate, ssoDisplayName]);
 
     return (
         <MainContainer>
             <Helmet>
                 <title>Log in to {authDisplayName}</title>
             </Helmet>
-            <Heading as="h2">Log in to {authDisplayName}</Heading>
+            <Heading as="h2">
+                {ssoDisplayName
+                    ? `Log in to ${ssoDisplayName} via ${authDisplayName}`
+                    : `Log in to ${authDisplayName}`}
+            </Heading>
             <FieldsContainer>
                 {fields.map(field => (
                     <InputField key={field.name} field={field} />
@@ -97,10 +116,10 @@ function LoginForm({authDisplayName, fields}: LoginPageProps): ReactElement {
     );
 }
 
-export function Page({authDisplayName, fields}: LoginPageProps): ReactElement {
+export function Page(props: LoginPageProps): ReactElement {
     return (
         <FormContext>
-            <LoginForm authDisplayName={authDisplayName} fields={fields} />
+            <LoginForm {...props} />
         </FormContext>
     );
 }

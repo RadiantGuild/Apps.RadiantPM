@@ -10,6 +10,14 @@ export const passToClient: readonly (keyof PageContext)[] = ["pageProps", "userP
 
 export async function render(pageContext: PageContextBuiltIn & PageContext) {
     const {Page, pageProps} = pageContext;
+
+    if (pageContext.redirect) {
+        return {
+            documentHtml: null,
+            pageContext: {}
+        };
+    }
+
     pageContext.helmetContext = {} as FilledContext;
 
     const pageHtml = renderToString(

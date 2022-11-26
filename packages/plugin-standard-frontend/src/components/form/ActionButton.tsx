@@ -7,7 +7,7 @@ const Button = styled("button", {
     padding: "$2 $4",
     border: "none",
     borderRadius: "3px",
-    width: "100px",
+    minWidth: "100px",
     fontFamily: "$text",
     fontSize: "0.8rem",
     shadowBorder: "$colors$shadowBorder",

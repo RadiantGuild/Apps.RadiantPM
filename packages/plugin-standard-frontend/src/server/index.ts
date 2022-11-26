@@ -17,6 +17,7 @@ import {
     ValidationPlugin
 } from "@radiantpm/plugin-types";
 import {createRouteMiddlewarePlugin} from "@radiantpm/plugin-utils";
+import {redirect} from "@radiantpm/plugin-utils/req-utils";
 import serveStatic from "@radiantpm/serve-static";
 import type {ViteDevServer} from "vite";
 import {createPageRenderer} from "vite-plugin-ssr";
@@ -247,14 +248,16 @@ const pluginExport: PluginExport<Configuration, true> = {
                         httpRequest: ctx.req
                     };
 
-                    const {httpResponse, errorWhileRendering} =
+                    const {httpResponse, errorWhileRendering, redirect: serverRedirect} =
                         await renderPage(pageContext);
 
                     if (errorWhileRendering) {
                         throw errorWhileRendering;
                     }
 
-                    if (httpResponse) {
+                    if (serverRedirect) {
+                        await redirect(ctx.res, serverRedirect.target, serverRedirect.redirectIsPermanent);
+                    } else if (httpResponse) {
                         const {statusCode, contentType} = httpResponse;
 
                         const bodyNodeStream =
@@ -281,9 +284,28 @@ const pluginExport: PluginExport<Configuration, true> = {
                     }
                 );
 
-                ctx.res.headers.set("location", url);
-                await ctx.res.flushHeaders(308);
+                await redirect(ctx.res, url, true);
             })
+        );
+
+        plugins.push(
+            createRouteMiddlewarePlugin(
+                "GET /.well-known/rpm-login",
+                async ctx => {
+                    const url = "/login" + ctx.req.url.search;
+                    await redirect(ctx.res, url, true);
+                }
+            )
+        );
+
+        plugins.push(
+            createRouteMiddlewarePlugin(
+                "GET /.well-known/rpm-login/success",
+                async ctx => {
+                    const url = "/login/success" + ctx.req.url.search;
+                    await redirect(ctx.res, url, true);
+                }
+            )
         );
 
         return plugins;
