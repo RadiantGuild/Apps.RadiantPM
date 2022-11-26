@@ -38,3 +38,5 @@ export type {
 } from "./validation-plugin";
 export {createDbPlugin} from "./db-plugin";
 export type {DbPlugin} from "./db-plugin";
+export {default as createRequestLogger} from "./request-logger";
+export type {RequestLoggerOptions} from "./request-logger";
