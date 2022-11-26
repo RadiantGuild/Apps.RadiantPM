@@ -3,6 +3,7 @@ import {
     AuthenticationField,
     AuthenticationListValidResponse,
     AuthenticationLoginChangedResponse,
+    BasicUserInfo,
     Scope
 } from "@radiantpm/plugin-types";
 import {SetCookieOptions} from "../req-utils";
@@ -91,6 +92,11 @@ export default interface AuthPlugin {
      * If this value is not recognised, return `true` for the best security.
      */
     isRequired?(scope: Scope): boolean | Promise<boolean>;
+
+    /**
+     * Loads basic information about a user, such as their name and email.
+     */
+    getBasicUserInfo(accessToken: string): Promise<BasicUserInfo>;
 
     /**
      * Get a list of fields to use to log the user in

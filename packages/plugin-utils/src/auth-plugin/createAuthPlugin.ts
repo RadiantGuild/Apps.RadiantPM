@@ -4,7 +4,7 @@ import {
     AuthenticationField,
     AuthenticationListValidResponse,
     AuthenticationLoginResponse,
-    AuthenticationPlugin,
+    AuthenticationPlugin, AuthenticationPluginExtension, BasicUserInfo,
     HttpRequest,
     isValidScopeKind,
     Plugin,
@@ -114,6 +114,10 @@ class AuthAuthenticationPlugin implements AuthenticationPlugin {
         }
     }
 
+    extend(id: string, extension: AuthenticationPluginExtension) {
+        // TODO
+    }
+
     getFields(): AuthenticationField[] | Promise<AuthenticationField[]> {
         return this.plugin.getFields();
     }
@@ -151,6 +155,10 @@ class AuthAuthenticationPlugin implements AuthenticationPlugin {
         | AuthenticationListValidResponse
         | Promise<AuthenticationListValidResponse> {
         return this.plugin.listValid(accessToken, scopeKind);
+    }
+
+    getBasicUserInfo(accessToken: string): Promise<BasicUserInfo> {
+        return this.plugin.getBasicUserInfo(accessToken);
     }
 }
 

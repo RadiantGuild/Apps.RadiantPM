@@ -4,7 +4,6 @@ import {
     AuthenticationListValidResponse,
     Scope
 } from "@radiantpm/plugin-types";
-import {Split} from "type-fest";
 
 export interface ScopeCheckHandlerFunction<
     Params extends unknown[],
@@ -34,12 +33,6 @@ interface ScopeHandlerObject<
     listValid: ScopeListValidHandlerFunction<Params, Kind>;
 }
 
-function toPascalCase(str: string) {
-    if (!str) return "";
-
-    return str[0].toUpperCase() + str.substring(1).toLowerCase();
-}
-
 /**
  * An automatic switch statement for scope handlers
  */
@@ -49,7 +42,7 @@ export default class SwitchedScopeHandler<Params extends unknown[] = []> {
         ScopeHandlerObject<Params>
         >();
 
-    register<Kind extends Scope["kind"]>(scopeKind: Kind, handlers: ScopeHandlerObject<Params, Kind>) {
+    register<Kind extends Scope["kind"]>(scopeKind: Kind, handlers: ScopeHandlerObject<Params, Kind>): void {
         this.handlers.set(scopeKind, handlers);
     }
 

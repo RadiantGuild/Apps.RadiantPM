@@ -3,6 +3,8 @@ import {HttpRequest} from "../middleware";
 import {AuthenticationCheckResponse} from "./AuthenticationCheckResponse";
 import AuthenticationField from "./AuthenticationField";
 import {AuthenticationListValidResponse} from "./AuthenticationListValidResponse";
+import AuthenticationPluginExtension from "./AuthenticationPluginExtension";
+import BasicUserInfo from "./BasicUserInfo";
 import Scope from "./Scope";
 
 export default interface AuthenticationPlugin
@@ -90,6 +92,16 @@ export default interface AuthenticationPlugin
     [context: symbol]: unknown;
 
     /**
+     * Extend the authentication plugin with new scopes.
+     * This method is used by plugins that implement some functionality that is not directly supported by RadiantPM.
+     * Although for human users an authentication extension acts simply as a wrapper around custom authentication code,
+     * it also allows API clients using a bearer token to explicitly have permissions allowed.
+     * @param id A unique identifier for this extension, used to namespace scopes it defines
+     * @param extension Methods used to interact with this extension.
+     */
+    extend(id: string, extension: AuthenticationPluginExtension): void;
+
+    /**
      * The same as what the `checkUrl` endpoint does, but as a direct function call
      * @param accessToken The access token returned from `loginUrl`, or null if the user isn't logged in
      * @param scope A scope that describes what the user is attempting to do
@@ -117,6 +129,11 @@ export default interface AuthenticationPlugin
      * @param scope A scope that describes what the user is attempting to do
      */
     isRequired?(scope: Scope): boolean | Promise<boolean>;
+
+    /**
+     * Loads basic information about a user, such as their name and email.
+     */
+    getBasicUserInfo(accessToken: string): Promise<BasicUserInfo>;
 
     /**
      * Returns a list of fields to ask the user about

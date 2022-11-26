@@ -1,3 +1,7 @@
+export interface CustomScope {
+    kind: `${string}:${string}`;
+}
+
 interface PageViewScope<Page extends string> {
     kind: "page.view";
     page: Page;
@@ -36,6 +40,7 @@ interface PackageCreateScope {
 }
 
 type Scopes =
+    | CustomScope
     | HomepageViewScope
     | FeedViewScope
     | FeedCreateScope
@@ -60,5 +65,5 @@ const validScopeKinds: ReadonlySet<Scope["kind"]> = new Set<Scope["kind"]>([
 ]);
 
 export function isValidScopeKind(kind: string): kind is Scope["kind"] {
-    return validScopeKinds.has(kind as Scope["kind"]);
+    return kind.startsWith("custom:") || validScopeKinds.has(kind as Scope["kind"]);
 }
