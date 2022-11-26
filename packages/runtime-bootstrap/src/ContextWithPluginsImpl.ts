@@ -1,11 +1,13 @@
 import assert from "assert";
 import {
     AuthenticationPlugin,
+    CachePlugin,
     DatabasePlugin,
     FileCategory,
     MiddlewarePlugin,
     Plugin,
-    StoragePlugin, ValidationPlugin
+    StoragePlugin,
+    ValidationPlugin
 } from "@radiantpm/plugin-types";
 import ContextImpl from "./ContextImpl";
 import ContextWithPlugins from "./ContextWithPlugins";
@@ -41,7 +43,10 @@ function assertHasPlugin(
     );
 }
 
-export default class ContextWithPluginsImpl extends ContextImpl implements ContextWithPlugins {
+export default class ContextWithPluginsImpl
+    extends ContextImpl
+    implements ContextWithPlugins
+{
     private readonly exportNameMapping = new Map<Plugin, string>();
 
     constructor(
@@ -73,6 +78,23 @@ export default class ContextWithPluginsImpl extends ContextImpl implements Conte
             pluginExport.name,
             "authentication"
         );
+
+        return plugin.plugin;
+    }
+
+    getCachePlugin(exportName: string): CachePlugin {
+        const pluginExport = this.getPluginInfoByName(exportName);
+        const targetPlugin = pluginExport.export.provides?.cache;
+
+        assertProvides(targetPlugin, pluginExport.name, "cache");
+
+        const plugin = this.findPlugin(
+            "cache",
+            pluginExport.name,
+            targetPlugin
+        );
+
+        assertHasPlugin(plugin, targetPlugin, pluginExport.name, "cache");
 
         return plugin.plugin;
     }
