@@ -51,6 +51,11 @@ export interface PluginProvision {
      * The ID of the plugin that provides validation
      */
     validation?: string;
+
+    /**
+     * The ID of the plugin that provides caching
+     */
+    cache?: string;
 }
 
 /**

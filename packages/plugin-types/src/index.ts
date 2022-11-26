@@ -22,3 +22,5 @@ export * from "./middleware";
 export * from "./validation";
 
 export * from "./package-handler";
+
+export * from "./cache";
