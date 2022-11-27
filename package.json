@@ -1,7 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "release": "pnpm m run build && changeset publish"
+    "build": "turbo run build",
+    "watch": "turbo run watch",
+    "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
     "@babel/core": "^7.18.5",
@@ -20,6 +22,7 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "prettier": "^2.3.2",
+    "turbo": "^1.6.3",
     "typescript": "^4.6"
   },
   "pnpm": {
