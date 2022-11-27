@@ -16,7 +16,12 @@ import {
     createRouteMiddlewarePlugin,
     RoutedRequestContext
 } from "@radiantpm/plugin-utils";
-import {getBuffer, redirect, setJson} from "@radiantpm/plugin-utils/req-utils";
+import {
+    getBuffer,
+    redirect,
+    setError,
+    setJson
+} from "@radiantpm/plugin-utils/req-utils";
 import {switchedScopeHandler} from "./scope-handlers";
 
 const logger = createLogger("plugin-turborepo-cache-server");
@@ -61,6 +66,38 @@ function getBearerAccessToken(req: HttpRequest) {
     }
 
     return token;
+}
+
+function getTeamSlugFromQuery(req: HttpRequest) {
+    const searchParams = req.url.searchParams;
+
+    const teamId = searchParams.get("teamId");
+    if (teamId && teamId.startsWith("team_")) {
+        const slug = teamId.substring("team_".length);
+        if (slug) return slug;
+    }
+
+    return searchParams.get("slug");
+}
+
+async function getTeamFromQuery(req: HttpRequest) {
+    const teamId = getTeamSlugFromQuery(req);
+    if (!teamId) return null;
+
+    const [feedSlug, packageSlug] = teamId.split("+", 2);
+
+    const feedId = await dbPlugin.getFeedIdFromSlug(feedSlug);
+    if (!feedId) return null;
+
+    const packageId = await dbPlugin.getPackageIdFromSlug(feedId, packageSlug);
+    if (!packageId) return null;
+
+    const [feed, pkg] = await Promise.all([
+        dbPlugin.getFeedFromId(feedId),
+        dbPlugin.getPackageFromId(packageId)
+    ]);
+
+    return {feed, pkg};
 }
 
 async function getRedirectUri(uid: string) {
@@ -150,8 +187,7 @@ const pluginExport: PluginExport<never, false> = {
                     await setJson(ctx.res, 200, {
                         user: {
                             email: user.displayIdentifier,
-                            name: user.displayName,
-                            username: user.username
+                            name: "Personal access only"
                         }
                     });
                 }
@@ -167,31 +203,55 @@ const pluginExport: PluginExport<never, false> = {
 
                     const allFeeds = await dbPlugin.listFeeds();
 
-                    const visibleFeeds = await Promise.all(
-                        allFeeds.filter(async ({slug}) => {
+                    const teams = await Promise.all(
+                        allFeeds.map(async feed => {
                             const {success} = await authPlugin.check(
                                 accessToken,
                                 {
                                     kind: "feed.view",
-                                    slug
+                                    slug: feed.slug
                                 }
                             );
 
-                            return success;
+                            if (!success) return false;
+
+                            const feedId = await dbPlugin.getFeedIdFromSlug(
+                                feed.slug
+                            );
+                            assert(feedId, "missing id for feed");
+
+                            const packages =
+                                await dbPlugin.listPackagesFromFeed(feedId);
+
+                            return await Promise.all(
+                                packages.map(async pkg => {
+                                    const {success} = await authPlugin.check(
+                                        accessToken,
+                                        {
+                                            kind: "package.view",
+                                            slug: pkg.slug,
+                                            feedSlug: feed.slug
+                                        }
+                                    );
+
+                                    if (!success) return false;
+
+                                    return {
+                                        id: `team_${feed.slug}+${pkg.slug}`,
+                                        name: `${feed.name}: ${pkg.name}`
+                                    };
+                                })
+                            ).then(teams => teams.filter(Boolean));
                         })
-                    );
+                    ).then(teams => teams.filter(Boolean).flat());
 
                     await setJson(ctx.res, 200, {
-                        teams: visibleFeeds.map(feed => {
-                            return {
-                                id: feed.slug,
-                                name: feed.name,
-                                slug: feed.slug,
-                                membership: {
-                                    role: "MEMBER"
-                                }
-                            };
-                        })
+                        teams,
+                        pagination: {
+                            count: 0,
+                            next: 0,
+                            prev: 0
+                        }
                     });
                 }
             ),
@@ -224,6 +284,37 @@ const pluginExport: PluginExport<never, false> = {
                     const hash = ctx.params.get("hash");
                     assert(hash, "Missing hash");
 
+                    const accessToken = getBearerAccessToken(ctx.req);
+
+                    const team = await getTeamFromQuery(ctx.req);
+
+                    if (!team) {
+                        await setError(
+                            ctx.res,
+                            "Either the team doesn't exist, or you don't have permission to read its cache"
+                        );
+
+                        return;
+                    }
+
+                    const cacheUpdateAuthResult = await authPlugin.check(
+                        accessToken,
+                        {
+                            kind: "turborepo-cs:cache.update",
+                            feedSlug: team.feed.slug,
+                            packageSlug: team.pkg.slug
+                        }
+                    );
+
+                    if (!cacheUpdateAuthResult.success) {
+                        await setError(
+                            ctx.res,
+                            "Not allowed to write to the cache",
+                            403
+                        );
+                        return;
+                    }
+
                     logger.debug("Writing artefact %s", hash);
 
                     const body = await getBuffer(ctx.req);
@@ -241,6 +332,37 @@ const pluginExport: PluginExport<never, false> = {
                 async (ctx: RoutedRequestContext) => {
                     const hash = ctx.params.get("hash");
                     assert(hash, "Missing hash");
+
+                    const accessToken = getBearerAccessToken(ctx.req);
+
+                    const team = await getTeamFromQuery(ctx.req);
+
+                    if (!team) {
+                        await setError(
+                            ctx.res,
+                            "Either the team doesn't exist, or you don't have permission to read its cache"
+                        );
+
+                        return;
+                    }
+
+                    const cacheViewAuthResult = await authPlugin.check(
+                        accessToken,
+                        {
+                            kind: "turborepo-cs:cache.view",
+                            feedSlug: team.feed.slug,
+                            packageSlug: team.pkg.slug
+                        }
+                    );
+
+                    if (!cacheViewAuthResult.success) {
+                        await setError(
+                            ctx.res,
+                            "Either the team doesn't exist, or you don't have permission to read its cache"
+                        );
+
+                        return;
+                    }
 
                     logger.debug("Loading artefact %s", hash);
 
@@ -276,7 +398,10 @@ const pluginExport: PluginExport<never, false> = {
             ],
             async check(accessToken, scope) {
                 try {
-                    return await switchedScopeHandler.check(scope);
+                    return await switchedScopeHandler.check(scope, {
+                        authPlugin,
+                        accessToken
+                    });
                 } catch (err) {
                     return {
                         success: false,
@@ -286,7 +411,10 @@ const pluginExport: PluginExport<never, false> = {
             },
             async listValid(accessToken, scopeKind) {
                 try {
-                    return await switchedScopeHandler.listValid(scopeKind);
+                    return await switchedScopeHandler.listValid(scopeKind, {
+                        authPlugin,
+                        accessToken
+                    });
                 } catch (err) {
                     return {
                         validObjects: [],
