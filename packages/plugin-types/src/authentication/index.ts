@@ -17,7 +17,7 @@ export type {
 } from "./AuthenticationLoginResponse";
 export type {default as AuthenticationPlugin} from "./AuthenticationPlugin";
 export {isValidScopeKind} from "./Scope";
-export type {default as Scope} from "./Scope";
+export type {default as Scope, CustomScope} from "./Scope";
 export type {default as SerialisableAuthenticationPlugin} from "./SerialisableAuthenticationPlugin";
 export {isListValidResponseNotAllowed} from "./AuthenticationListValidResponse";
 export type {AuthenticationListValidResponse} from "./AuthenticationListValidResponse";

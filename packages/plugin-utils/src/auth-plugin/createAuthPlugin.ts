@@ -1,10 +1,14 @@
+import assert from "assert";
 import {createLogger} from "@radiantpm/log";
 import {
     AuthenticationCheckResponse,
     AuthenticationField,
     AuthenticationListValidResponse,
     AuthenticationLoginResponse,
-    AuthenticationPlugin, AuthenticationPluginExtension, BasicUserInfo,
+    AuthenticationPlugin,
+    AuthenticationPluginExtension,
+    BasicUserInfo,
+    CustomScope,
     HttpRequest,
     isValidScopeKind,
     Plugin,
@@ -55,6 +59,7 @@ class AuthAuthenticationPlugin implements AuthenticationPlugin {
     readonly isRequired?: (scope: Scope) => boolean | Promise<boolean>;
     readonly getHelpText?: () => string | Promise<string>;
     readonly checkAccessTokenValidity?: (accessToken: string) => boolean;
+    #extensions = new Map<string, AuthenticationPluginExtension>();
 
     constructor(private readonly plugin: AuthPlugin) {
         this.isRequired = this.plugin.isRequired?.bind(this.plugin);
@@ -114,8 +119,20 @@ class AuthAuthenticationPlugin implements AuthenticationPlugin {
         }
     }
 
+    private static assertCustomScopeKind(
+        scopeKind: Scope["kind"]
+    ): asserts scopeKind is CustomScope["kind"] {
+        assert(scopeKind.indexOf(":") !== -1, "scope is not a custom scope");
+    }
+
     extend(id: string, extension: AuthenticationPluginExtension) {
-        // TODO
+        if (this.#extensions.has(id)) {
+            throw new Error(
+                `Multiple auth extensions tried to use the ID \`${id}\``
+            );
+        }
+
+        this.#extensions.set(id, extension);
     }
 
     getFields(): AuthenticationField[] | Promise<AuthenticationField[]> {
@@ -126,7 +143,26 @@ class AuthAuthenticationPlugin implements AuthenticationPlugin {
         accessToken: string | null,
         scope: Scope
     ): AuthenticationCheckResponse | Promise<AuthenticationCheckResponse> {
-        const result = this.plugin.check(accessToken, scope);
+        const scopeNamespaceSepIdx = scope.kind.indexOf(":");
+
+        let result:
+            | AuthenticationCheckResponse
+            | Promise<AuthenticationCheckResponse>;
+
+        if (scopeNamespaceSepIdx !== -1) {
+            AuthAuthenticationPlugin.assertCustomScopeKind(scope.kind);
+
+            const extensionId = scope.kind.substring(0, scopeNamespaceSepIdx);
+            const extension = this.#extensions.get(extensionId);
+
+            if (!extension) {
+                throw new Error(`No extension with ID \`${extensionId}\``);
+            }
+
+            result = extension.check(accessToken, scope);
+        } else {
+            result = this.plugin.check(accessToken, scope);
+        }
 
         return AuthAuthenticationPlugin.runOnMaybePromise(result, res => {
             if (res.success) {
