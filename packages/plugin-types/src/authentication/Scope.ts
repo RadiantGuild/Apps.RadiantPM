@@ -1,6 +1,6 @@
-export interface CustomScope {
+export type CustomScope = {
     kind: `${string}:${string}`;
-}
+} & Record<string, string>;
 
 interface PageViewScope<Page extends string> {
     kind: "page.view";
