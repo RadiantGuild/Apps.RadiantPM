@@ -19,4 +19,4 @@ jobs:
           node-version: 16
       - run: corepack enable
       - run: pnpm install
-      - run: pnpm m run build
+      - run: pnpm run build
