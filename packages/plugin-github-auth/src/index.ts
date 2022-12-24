@@ -62,6 +62,8 @@ class GithubAuthPlugin implements AuthPlugin {
 
     private static octokitMetadata = new WeakMap<Octokit, OctokitMetadata>();
 
+    private defaultAccessToken: string;
+
     id = "github-auth";
     displayName = "Github";
     accessTokenCookieName = "auth-token";
@@ -78,7 +80,7 @@ class GithubAuthPlugin implements AuthPlugin {
         accessToken: string | null,
         scope: Scope
     ): Promise<AuthenticationCheckResponse> {
-        const octokit = await this.getOctokit(accessToken);
+        const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
         const context = new AuthContext({
             octokit,
@@ -105,7 +107,7 @@ class GithubAuthPlugin implements AuthPlugin {
         accessToken: string | null,
         scopeKind: Scope["kind"]
     ): Promise<AuthenticationListValidResponse> {
-        const octokit = await this.getOctokit(accessToken);
+        const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
         const context = new AuthContext({
             octokit,
@@ -126,6 +128,11 @@ class GithubAuthPlugin implements AuthPlugin {
                 errorMessage: getErrorMessage(err)
             };
         }
+    }
+
+    checkAccessTokenValidity(accessToken: string): boolean {
+        const octokit = this.getOctokit(accessToken);
+        return this.isLoggedIn(octokit);
     }
 
     getFields(): AuthenticationField[] {
@@ -152,7 +159,7 @@ class GithubAuthPlugin implements AuthPlugin {
             };
         }
 
-        const octokit = await this.getOctokit(accessToken);
+        const octokit = this.getOctokit(accessToken);
 
         try {
             await octokit.users.getAuthenticated();
@@ -205,7 +212,7 @@ class GithubAuthPlugin implements AuthPlugin {
         };
     }
 
-    private async getOctokit(accessToken?: string | null) {
+    private getOctokit(accessToken?: string | null) {
         if (accessToken) {
             const octokit = new Octokit({
                 ...(GithubAuthPlugin.defaultOctokitOptions as Record<
@@ -222,14 +229,12 @@ class GithubAuthPlugin implements AuthPlugin {
 
             return octokit;
         } else {
-            const defaultAccessToken = await this.getDefaultAccessToken();
-
             const octokit = new Octokit({
                 ...(GithubAuthPlugin.defaultOctokitOptions as Record<
                     string,
                     unknown
                 >),
-                auth: defaultAccessToken
+                auth: this.defaultAccessToken
             });
 
             GithubAuthPlugin.octokitMetadata.set(octokit, {
@@ -241,7 +246,7 @@ class GithubAuthPlugin implements AuthPlugin {
     }
 
     private async getAuthState(octokit: Octokit): Promise<AuthState> {
-        if (this.isLoggedIn(octokit)) {
+        if (!this.isLoggedIn(octokit)) {
             return {
                 isLoggedIn: false
             };
@@ -270,13 +275,13 @@ class GithubAuthPlugin implements AuthPlugin {
         );
     }
 
-    private async getDefaultAccessToken() {
+    async initialise() {
         if (!existsSync(this.config.accessTokenFilename)) {
             throw new Error("Github default access token file does not exist");
         }
 
         const source = await readFile(this.config.accessTokenFilename, "utf8");
-        return source.trim();
+        this.defaultAccessToken = source.trim();
     }
 }
 
@@ -300,8 +305,10 @@ const pluginExport: PluginExport<Configuration, true> = {
     provides: {
         authentication: "github-auth"
     },
-    init(config) {
-        return createAuthPlugin(new GithubAuthPlugin(config));
+    async init(config) {
+        const plugin = new GithubAuthPlugin(config);
+        await plugin.initialise();
+        return createAuthPlugin(plugin);
     },
     onMetaLoaded(meta: EnvironmentMetadata) {
         dbPlugin = meta.selectedPlugins.database;

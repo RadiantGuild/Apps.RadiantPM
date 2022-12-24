@@ -26,18 +26,27 @@ export default class AuthContext {
         );
     }
 
-    getPackageHandler(type: string): PackageHandlerPlugin {
-        const handler = this.packageHandlers.get(type);
-        if (!handler) throw new Error(`No package handler is registered for ${type} packages`);
-        return handler;
-    }
-
     get gh(): Octokit["rest"] {
         return this.octokit.rest;
     }
 
+    getPackageHandler(type: string): PackageHandlerPlugin {
+        const handler = this.packageHandlers.get(type);
+        if (!handler)
+            throw new Error(
+                `No package handler is registered for ${type} packages`
+            );
+        return handler;
+    }
+
     async isInOrg(org: string): Promise<boolean> {
         if (!this.authState.isLoggedIn) return false;
+
+        const {data: userInfo} = await this.gh.users.getAuthenticated();
+
+        if (org === userInfo.login.toLowerCase()) {
+            return true;
+        }
 
         const res = await this.octokit.rest.orgs
             .checkMembershipForUser({
