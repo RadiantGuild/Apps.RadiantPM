@@ -292,6 +292,21 @@
           "nullable": true
         }
       }
+    },
+    "@radiantpm/plugin-redis-cache": {
+      "type": "object",
+      "required": ["connection"],
+      "properties": {
+        "connection": {
+          "type": "string",
+          "description": "Redis connection string, as a redis:// or rediss:// URL"
+        },
+        "namespace": {
+          "type": "string",
+          "nullable": true,
+          "description": "A prefix applied to all keys to namespace the connection"
+        }
+      }
     }
   },
   "title": "configs",
