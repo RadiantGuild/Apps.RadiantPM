@@ -1,4 +1,5 @@
 import type AuthenticationPlugin from "./authentication/AuthenticationPlugin";
+import {CachePlugin} from "./cache";
 import {DatabasePlugin} from "./database";
 import type {MiddlewarePlugin} from "./middleware";
 import {PackageHandlerPlugin} from "./package-handler";
@@ -11,6 +12,7 @@ type Plugin =
     | StoragePlugin
     | DatabasePlugin
     | ValidationPlugin
-    | PackageHandlerPlugin;
+    | PackageHandlerPlugin
+    | CachePlugin;
 
 export default Plugin;

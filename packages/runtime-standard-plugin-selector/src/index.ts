@@ -1,9 +1,11 @@
 import {
     AuthenticationPlugin,
+    CachePlugin,
     DatabasePlugin,
     FileCategory,
     RuntimeMetadata,
-    StoragePlugin, ValidationPlugin
+    StoragePlugin,
+    ValidationPlugin
 } from "@radiantpm/plugin-types";
 import {
     ContextWithPlugins,
@@ -88,6 +90,14 @@ const pluginSelector: PluginSelector = {
         );
 
         return context.getValidationPlugin(pluginExportName);
+    },
+    async selectCachePlugin(context: ContextWithPlugins): Promise<CachePlugin> {
+        const pluginExportName = await context.readRequiredConfig(
+            "cache_plugin",
+            "Name of the cache plugin export"
+        );
+
+        return context.getCachePlugin(pluginExportName);
     }
 };
 

@@ -181,7 +181,8 @@ async function bootstrapImplementation(runtimeLibraries: RuntimeLibraries) {
         typeof pluginSelector.selectAuthenticationPlugin !== "function" ||
         typeof pluginSelector.selectDatabasePlugin !== "function" ||
         typeof pluginSelector.selectStoragePlugin !== "function" ||
-        typeof pluginSelector.selectValidationPlugin !== "function"
+        typeof pluginSelector.selectValidationPlugin !== "function" ||
+        typeof pluginSelector.selectCachePlugin !== "function"
     ) {
         logger.fatal("Plugin selector does not expose a required method");
         exit(e.ERROR_RUNTIME_PLUGIN_SELECTOR_INVALID);
@@ -191,7 +192,8 @@ async function bootstrapImplementation(runtimeLibraries: RuntimeLibraries) {
         authenticationPlugin,
         databasePlugin,
         storagePluginEntries,
-        validationPlugin
+        validationPlugin,
+        cachePlugin
     ] = await Promise.all([
         pluginSelector.selectAuthenticationPlugin(pluginSelectorContext),
         pluginSelector.selectDatabasePlugin(pluginSelectorContext),
@@ -207,7 +209,8 @@ async function bootstrapImplementation(runtimeLibraries: RuntimeLibraries) {
                     ] as const
             )
         ),
-        pluginSelector.selectValidationPlugin(pluginSelectorContext)
+        pluginSelector.selectValidationPlugin(pluginSelectorContext),
+        pluginSelector.selectCachePlugin(pluginSelectorContext)
     ]).catch(err => {
         if (isExitError(err)) throw err;
 
@@ -221,7 +224,8 @@ async function bootstrapImplementation(runtimeLibraries: RuntimeLibraries) {
         storage: Object.fromEntries(
             storagePluginEntries
         ) as SelectedPlugins["storage"],
-        validation: validationPlugin
+        validation: validationPlugin,
+        cache: cachePlugin
     };
 
     logger.debug("Importing backend");
