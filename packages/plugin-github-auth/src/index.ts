@@ -7,7 +7,6 @@ import {
     AuthenticationField,
     AuthenticationListValidResponse,
     AuthenticationLoginChangedResponse,
-    BasicUserInfo,
     CachePlugin,
     CacheSetOptions,
     DatabasePlugin,
@@ -312,19 +311,6 @@ class GithubAuthPlugin implements AuthPlugin {
 
         return {
             valid: true
-        };
-    }
-
-    async getBasicUserInfo(accessToken: string): Promise<BasicUserInfo> {
-        const octokit = await this.getOctokit(accessToken);
-        const user = await octokit.users.getAuthenticated();
-
-        return {
-            displayIdentifier: user.data.email ?? user.data.login,
-            email: user.data.email ?? undefined,
-            displayName: user.data.name ?? undefined,
-            username: user.data.login,
-            id: user.data.id.toString()
         };
     }
 

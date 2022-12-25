@@ -12,6 +12,6 @@
     "@radiantpm/plugin-npm": "workspace:^0.1.0",
     "@radiantpm/plugin-standard-frontend": "workspace:^0.1.0",
     "@radiantpm/plugin-standard-validator": "workspace:^0.1.0",
-    "@radiantpm/plugin-s3-storage": "workspace:^0.1.0"
+    "@radiantpm/plugin-s3-storage": "workspace:^0.0.0"
   }
 }
