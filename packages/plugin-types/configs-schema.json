@@ -223,7 +223,9 @@
     },
     "@radiantpm/plugin-gcs-storage": {
       "type": "object",
-      "required": ["bucketName"],
+      "required": [
+        "bucketName"
+      ],
       "properties": {
         "bucketName": {
           "type": "string",
@@ -244,6 +246,49 @@
           "description": "The base URL for requests",
           "default": "/-/storage/",
           "pattern": "^\/",
+          "nullable": true
+        }
+      }
+    },
+    "@radiantpm/plugin-s3-storage": {
+      "type": "object",
+      "required": [
+        "s3Endpoint",
+        "bucketName"
+      ],
+      "properties": {
+        "bucketName": {
+          "type": "string"
+        },
+        "bucketBasePath": {
+          "type": "string",
+          "nullable": true
+        },
+        "baseUrl": {
+          "type": "string",
+          "nullable": true
+        },
+        "s3Credentials": {
+          "type": "object",
+          "nullable": true,
+          "required": [
+            "accessKeyId",
+            "secretAccessKey"
+          ],
+          "properties": {
+            "accessKeyId": {
+              "type": "string"
+            },
+            "secretAccessKey": {
+              "type": "string"
+            }
+          }
+        },
+        "s3Endpoint": {
+          "type": "string"
+        },
+        "s3Region": {
+          "type": "string",
           "nullable": true
         }
       }

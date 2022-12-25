@@ -26,6 +26,7 @@ Outline.displayName = "Outline";
 const DropdownContainer = styled("div", {
     position: "absolute",
     zIndex: 1,
+    overflowY: "auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
