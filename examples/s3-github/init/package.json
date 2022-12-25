@@ -1,5 +1,5 @@
 {
-  "name": "@gcs-github/init",
+  "name": "@s3-github/init",
   "version": "1.0.0",
   "type": "module",
   "private": true,

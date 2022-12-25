@@ -1,5 +1,5 @@
 {
-  "name": "@gcs-github/plugin-store",
+  "name": "@s3-github/plugin-store",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
