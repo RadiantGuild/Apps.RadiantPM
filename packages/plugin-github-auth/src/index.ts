@@ -110,8 +110,6 @@ class GithubAuthPlugin implements AuthPlugin {
 
     private static octokitMetadata = new WeakMap<Octokit, OctokitMetadata>();
 
-    private defaultAccessToken: string;
-
     id = "github-auth";
     displayName = "Github";
     accessTokenCookieName = "auth-token";
@@ -122,13 +120,15 @@ class GithubAuthPlugin implements AuthPlugin {
         path: "/"
     };
 
+    private defaultAccessToken: string;
+
     constructor(private readonly config: Configuration) {}
 
     async check(
         accessToken: string | null,
         scope: Scope
     ): Promise<AuthenticationCheckResponse> {
-        const cacheKey = getCacheKey("check", accessToken, scope);
+        const cacheKey = getCacheKey(`check.${scope.kind}`, accessToken, scope);
         const existingResult = await readEncryptedCacheValue(
             cacheKey,
             accessToken
@@ -181,7 +181,7 @@ class GithubAuthPlugin implements AuthPlugin {
         accessToken: string | null,
         scopeKind: Scope["kind"]
     ): Promise<AuthenticationListValidResponse> {
-        const cacheKey = getCacheKey("list-valid", accessToken, {
+        const cacheKey = getCacheKey(`list-valid.${scopeKind}`, accessToken, {
             kind: scopeKind
         });
         const existingResult = await readEncryptedCacheValue(
@@ -314,6 +314,15 @@ class GithubAuthPlugin implements AuthPlugin {
         };
     }
 
+    async initialise() {
+        if (!existsSync(this.config.accessTokenFilename)) {
+            throw new Error("Github default access token file does not exist");
+        }
+
+        const source = await readFile(this.config.accessTokenFilename, "utf8");
+        this.defaultAccessToken = source.trim();
+    }
+
     private getOctokit(accessToken?: string | null) {
         if (accessToken) {
             const octokit = new Octokit({
@@ -375,15 +384,6 @@ class GithubAuthPlugin implements AuthPlugin {
         return (
             GithubAuthPlugin.octokitMetadata.get(octokit)?.isDefault === false
         );
-    }
-
-    async initialise() {
-        if (!existsSync(this.config.accessTokenFilename)) {
-            throw new Error("Github default access token file does not exist");
-        }
-
-        const source = await readFile(this.config.accessTokenFilename, "utf8");
-        this.defaultAccessToken = source.trim();
     }
 }
 
