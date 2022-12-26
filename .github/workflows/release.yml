@@ -25,6 +25,5 @@ jobs:
       - uses: changesets/action@v1
         with:
           publish: pnpm release
-          setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
