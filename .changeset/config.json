@@ -11,5 +11,14 @@
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "minor",
-  "ignore": []
+  "ignore": [
+    "@gcs-github/init",
+    "@gcs-github/plugin-store",
+    "@local-github/init",
+    "@local-github/plugin-store",
+    "@local-redis-github/init",
+    "@local-redis-github/plugin-store",
+    "@s3-github/init",
+    "@s3-github/plugin-store"
+  ]
 }
