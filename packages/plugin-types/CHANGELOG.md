@@ -1,5 +1,11 @@
 # @radiantpm/plugin-types
 
+## 0.2.1
+
+### Patch Changes
+
+-   [`d56ee7a`](https://github.com/RadiantPM/RadiantPM/commit/d56ee7a722c213219abb7b6806dcbf0807d70409) Thanks [@Alduino](https://github.com/Alduino)! - Fixed database adapter names in schema for `@radiantpm/plugin-knex-database`'s configuration
+
 ## 0.2.0
 
 ### Minor Changes
