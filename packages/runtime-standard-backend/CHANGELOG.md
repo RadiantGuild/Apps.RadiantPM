@@ -1,5 +1,12 @@
 # @radiantpm/runtime-standard-backend
 
+## 0.1.2
+
+### Patch Changes
+
+-   Updated dependencies [[`d56ee7a`](https://github.com/RadiantPM/RadiantPM/commit/d56ee7a722c213219abb7b6806dcbf0807d70409)]:
+    -   @radiantpm/plugin-types@0.2.1
+
 ## 0.1.1
 
 ### Patch Changes

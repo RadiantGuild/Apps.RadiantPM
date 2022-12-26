@@ -1,5 +1,14 @@
 # @radiantpm/plugin-standard-frontend
 
+## 0.1.2
+
+### Patch Changes
+
+-   [`337529c`](https://github.com/RadiantPM/RadiantPM/commit/337529c1c176b1b8aea7b4ec55fcbb814e4cad02) Thanks [@Alduino](https://github.com/Alduino)! - Fixed a build issue causing the plugin to error on init
+
+-   Updated dependencies [[`d56ee7a`](https://github.com/RadiantPM/RadiantPM/commit/d56ee7a722c213219abb7b6806dcbf0807d70409)]:
+    -   @radiantpm/plugin-types@0.2.1
+
 ## 0.1.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/plugin-standard-frontend",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "main": "./dist/server.js",
   "types": "./dist/server.d.ts",
@@ -32,7 +32,7 @@
     "@radiantpm/frontend-utilities": "workspace:^0.1.1",
     "@radiantpm/log": "workspace:^0.1.0",
     "@radiantpm/plugin-error-handler": "workspace:^0.1.1",
-    "@radiantpm/plugin-types": "workspace:^0.2.0",
+    "@radiantpm/plugin-types": "workspace:^0.2.1",
     "@radiantpm/plugin-utils": "workspace:^0.1.1",
     "@radiantpm/serve-static": "workspace:^0.1.1",
     "@stitches/react": "^1.2.5",
