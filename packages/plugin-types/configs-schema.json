@@ -164,8 +164,10 @@
                 "client": {
                   "type": "string",
                   "enum": [
-                    "postgresql",
-                    "mysql"
+                    "postgres",
+                    "mysql",
+                    "mssql",
+                    "oracle"
                   ]
                 },
                 "connection": {
@@ -295,7 +297,9 @@
     },
     "@radiantpm/plugin-redis-cache": {
       "type": "object",
-      "required": ["connection"],
+      "required": [
+        "connection"
+      ],
       "properties": {
         "connection": {
           "type": "string",
