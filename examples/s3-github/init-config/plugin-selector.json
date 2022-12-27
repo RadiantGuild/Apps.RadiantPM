@@ -1,0 +1,7 @@
+{
+  "authPlugin": "@radiantpm/plugin-github-auth",
+  "databasePlugin": "@radiantpm/plugin-knex-database",
+  "storagePlugins": "static=@radiantpm/plugin-local-storage;pkg=@radiantpm/plugin-s3-storage",
+  "validationPlugin": "@radiantpm/plugin-standard-validator",
+  "cachePlugin": "@radiantpm/plugin-file-cache"
+}

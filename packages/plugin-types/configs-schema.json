@@ -164,8 +164,10 @@
                 "client": {
                   "type": "string",
                   "enum": [
-                    "postgresql",
-                    "mysql"
+                    "postgres",
+                    "mysql",
+                    "mssql",
+                    "oracle"
                   ]
                 },
                 "connection": {
@@ -223,7 +225,9 @@
     },
     "@radiantpm/plugin-gcs-storage": {
       "type": "object",
-      "required": ["bucketName"],
+      "required": [
+        "bucketName"
+      ],
       "properties": {
         "bucketName": {
           "type": "string",
@@ -245,6 +249,66 @@
           "default": "/-/storage/",
           "pattern": "^\/",
           "nullable": true
+        }
+      }
+    },
+    "@radiantpm/plugin-s3-storage": {
+      "type": "object",
+      "required": [
+        "s3Endpoint",
+        "bucketName"
+      ],
+      "properties": {
+        "bucketName": {
+          "type": "string"
+        },
+        "bucketBasePath": {
+          "type": "string",
+          "nullable": true
+        },
+        "baseUrl": {
+          "type": "string",
+          "nullable": true
+        },
+        "s3Credentials": {
+          "type": "object",
+          "nullable": true,
+          "required": [
+            "accessKeyId",
+            "secretAccessKey"
+          ],
+          "properties": {
+            "accessKeyId": {
+              "type": "string"
+            },
+            "secretAccessKey": {
+              "type": "string"
+            }
+          }
+        },
+        "s3Endpoint": {
+          "type": "string"
+        },
+        "s3Region": {
+          "type": "string",
+          "nullable": true
+        }
+      }
+    },
+    "@radiantpm/plugin-redis-cache": {
+      "type": "object",
+      "required": [
+        "connection"
+      ],
+      "properties": {
+        "connection": {
+          "type": "string",
+          "description": "Redis connection string, as a redis:// or rediss:// URL"
+        },
+        "namespace": {
+          "type": "string",
+          "nullable": true,
+          "description": "A prefix applied to all keys to namespace the connection"
         }
       }
     }

@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/plugin-local-storage",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "@radiantpm/log": "workspace:^0.1.0",
-    "@radiantpm/plugin-types": "workspace:^0.1.0",
-    "@radiantpm/plugin-utils": "workspace:^0.1.0",
+    "@radiantpm/plugin-types": "workspace:^0.2.0",
+    "@radiantpm/plugin-utils": "workspace:^0.1.1",
     "hasha": "^5.2.2",
     "url-join": "^4.0.1"
   }

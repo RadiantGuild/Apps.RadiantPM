@@ -1,1 +1,1 @@
-export default "/feeds/:feedSlug/packages/create";
+export default "/feeds/@feedSlug/packages/create";

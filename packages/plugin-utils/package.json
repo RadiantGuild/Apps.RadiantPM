@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/plugin-utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "sideEffects": false,
   "types": "./dist/index.d.ts",
@@ -34,7 +34,7 @@
   "dependencies": {
     "@radiantguild/yoogi": "^1.0.3",
     "@radiantpm/log": "workspace:^0.1.0",
-    "@radiantpm/plugin-types": "workspace:^0.1.0",
+    "@radiantpm/plugin-types": "workspace:^0.2.0",
     "ajv": "^8.6.3",
     "pako": "^2.0.4",
     "react": "^18",

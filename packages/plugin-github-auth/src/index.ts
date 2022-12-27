@@ -6,7 +6,8 @@ import {
     AuthenticationCheckResponse,
     AuthenticationField,
     AuthenticationListValidResponse,
-    AuthenticationLoginChangedResponse, BasicUserInfo,
+    AuthenticationLoginChangedResponse,
+    BasicUserInfo,
     CachePlugin,
     CacheSetOptions,
     DatabasePlugin,
@@ -120,13 +121,15 @@ class GithubAuthPlugin implements AuthPlugin {
         path: "/"
     };
 
+    private defaultAccessToken: string;
+
     constructor(private readonly config: Configuration) {}
 
     async check(
         accessToken: string | null,
         scope: Scope
     ): Promise<AuthenticationCheckResponse> {
-        const cacheKey = getCacheKey("check", accessToken, scope);
+        const cacheKey = getCacheKey(`check.${scope.kind}`, accessToken, scope);
         const existingResult = await readEncryptedCacheValue(
             cacheKey,
             accessToken
@@ -137,7 +140,7 @@ class GithubAuthPlugin implements AuthPlugin {
             return JSON.parse(existingResult);
         }
 
-        const octokit = await this.getOctokit(accessToken);
+        const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
         const context = new AuthContext({
             octokit,
@@ -179,7 +182,7 @@ class GithubAuthPlugin implements AuthPlugin {
         accessToken: string | null,
         scopeKind: Scope["kind"]
     ): Promise<AuthenticationListValidResponse> {
-        const cacheKey = getCacheKey("list-valid", accessToken, {
+        const cacheKey = getCacheKey(`list-valid.${scopeKind}`, accessToken, {
             kind: scopeKind
         });
         const existingResult = await readEncryptedCacheValue(
@@ -192,7 +195,7 @@ class GithubAuthPlugin implements AuthPlugin {
             return JSON.parse(existingResult);
         }
 
-        const octokit = await this.getOctokit(accessToken);
+        const octokit = this.getOctokit(accessToken);
         const authState = await this.getAuthState(octokit);
         const context = new AuthContext({
             octokit,
@@ -230,6 +233,11 @@ class GithubAuthPlugin implements AuthPlugin {
         return result;
     }
 
+    checkAccessTokenValidity(accessToken: string): boolean {
+        const octokit = this.getOctokit(accessToken);
+        return this.isLoggedIn(octokit);
+    }
+
     getFields(): AuthenticationField[] {
         return [
             {
@@ -254,7 +262,7 @@ class GithubAuthPlugin implements AuthPlugin {
             };
         }
 
-        const octokit = await this.getOctokit(accessToken);
+        const octokit = this.getOctokit(accessToken);
 
         try {
             await octokit.users.getAuthenticated();
@@ -308,7 +316,7 @@ class GithubAuthPlugin implements AuthPlugin {
     }
 
     async getBasicUserInfo(accessToken: string): Promise<BasicUserInfo> {
-        const octokit = await this.getOctokit(accessToken);
+        const octokit = this.getOctokit(accessToken);
         const user = await octokit.users.getAuthenticated();
 
         return {
@@ -320,7 +328,16 @@ class GithubAuthPlugin implements AuthPlugin {
         };
     }
 
-    private async getOctokit(accessToken?: string | null) {
+    async initialise() {
+        if (!existsSync(this.config.accessTokenFilename)) {
+            throw new Error("Github default access token file does not exist");
+        }
+
+        const source = await readFile(this.config.accessTokenFilename, "utf8");
+        this.defaultAccessToken = source.trim();
+    }
+
+    private getOctokit(accessToken?: string | null) {
         if (accessToken) {
             const octokit = new Octokit({
                 ...(GithubAuthPlugin.defaultOctokitOptions as Record<
@@ -337,14 +354,12 @@ class GithubAuthPlugin implements AuthPlugin {
 
             return octokit;
         } else {
-            const defaultAccessToken = await this.getDefaultAccessToken();
-
             const octokit = new Octokit({
                 ...(GithubAuthPlugin.defaultOctokitOptions as Record<
                     string,
                     unknown
                 >),
-                auth: defaultAccessToken
+                auth: this.defaultAccessToken
             });
 
             GithubAuthPlugin.octokitMetadata.set(octokit, {
@@ -356,7 +371,7 @@ class GithubAuthPlugin implements AuthPlugin {
     }
 
     private async getAuthState(octokit: Octokit): Promise<AuthState> {
-        if (this.isLoggedIn(octokit)) {
+        if (!this.isLoggedIn(octokit)) {
             return {
                 isLoggedIn: false
             };
@@ -384,15 +399,6 @@ class GithubAuthPlugin implements AuthPlugin {
             GithubAuthPlugin.octokitMetadata.get(octokit)?.isDefault === false
         );
     }
-
-    private async getDefaultAccessToken() {
-        if (!existsSync(this.config.accessTokenFilename)) {
-            throw new Error("Github default access token file does not exist");
-        }
-
-        const source = await readFile(this.config.accessTokenFilename, "utf8");
-        return source.trim();
-    }
 }
 
 const pluginExport: PluginExport<Configuration, true> = {
@@ -415,8 +421,10 @@ const pluginExport: PluginExport<Configuration, true> = {
     provides: {
         authentication: "github-auth"
     },
-    init(config) {
-        return createAuthPlugin(new GithubAuthPlugin(config));
+    async init(config) {
+        const plugin = new GithubAuthPlugin(config);
+        await plugin.initialise();
+        return createAuthPlugin(plugin);
     },
     onMetaLoaded(meta: EnvironmentMetadata) {
         dbPlugin = meta.selectedPlugins.database;

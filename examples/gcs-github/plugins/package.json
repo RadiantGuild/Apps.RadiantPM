@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@radiantpm/plugin-api-frontend": "workspace:^0.1.0",
-    "@radiantpm/plugin-default-response": "workspace:^0.1.0",
-    "@radiantpm/plugin-error-handler": "workspace:^0.1.0",
+    "@radiantpm/plugin-api-frontend": "workspace:^0.1.1",
+    "@radiantpm/plugin-default-response": "workspace:^0.1.1",
+    "@radiantpm/plugin-error-handler": "workspace:^0.1.1",
     "@radiantpm/plugin-file-cache": "workspace:^0.1.0",
-    "@radiantpm/plugin-gcs-storage": "workspace:^0.1.0",
-    "@radiantpm/plugin-github-auth": "workspace:^0.1.0",
-    "@radiantpm/plugin-knex-database": "workspace:^0.1.0",
-    "@radiantpm/plugin-local-storage": "workspace:^0.1.0",
-    "@radiantpm/plugin-npm": "workspace:^0.1.0",
-    "@radiantpm/plugin-standard-frontend": "workspace:^0.1.0",
-    "@radiantpm/plugin-standard-validator": "workspace:^0.1.0"
+    "@radiantpm/plugin-gcs-storage": "workspace:^0.1.1",
+    "@radiantpm/plugin-github-auth": "workspace:^0.2.0",
+    "@radiantpm/plugin-knex-database": "workspace:^0.1.1",
+    "@radiantpm/plugin-local-storage": "workspace:^0.1.1",
+    "@radiantpm/plugin-npm": "workspace:^0.1.1",
+    "@radiantpm/plugin-standard-frontend": "workspace:^0.1.3",
+    "@radiantpm/plugin-standard-validator": "workspace:^0.1.1"
   }
 }

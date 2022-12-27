@@ -2,7 +2,7 @@ import {useLocalId} from "@radiantguild/form-contexts";
 import {useCombobox, UseComboboxReturnValue} from "downshift";
 import Fuse from "fuse.js";
 import {ReactElement, useEffect, useState} from "react";
-import {BsChevronDown} from "react-icons/bs";
+import {ChevronDown} from "react-bootstrap-icons";
 import {styled} from "~/stitches.config";
 import {focusedShadowBorder} from "~/utils/style-helpers";
 
@@ -26,6 +26,7 @@ Outline.displayName = "Outline";
 const DropdownContainer = styled("div", {
     position: "absolute",
     zIndex: 1,
+    overflowY: "auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
@@ -131,6 +132,7 @@ const Container = styled("div", {
 Container.displayName = "Container";
 
 const OpenButton = styled("button", {
+    color: "$text",
     background: "transparent",
     border: "none",
     outline: "none",
@@ -215,7 +217,7 @@ export function Select({
                     type="button"
                     aria-label="Toggle dropdown"
                 >
-                    <BsChevronDown />
+                    <ChevronDown />
                 </OpenButton>
             </TextboxContainer>
             <DropdownContainer {...menuProps}>

@@ -7,8 +7,17 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
         async check(scope, config, ctx) {
             // check if the organisation is public or private—if there are any public repositories, count it as public,
             // otherwise count it as private, so you can only see it if you are a part of that org
+            // (also, the user can always view the feed named by their own login)
 
             try {
+                const {data: userInfo} = await ctx.gh.users.getAuthenticated();
+
+                if (scope.slug === userInfo.login.toLowerCase()) {
+                    return {
+                        success: true
+                    };
+                }
+
                 const ghOrg = await ctx.gh.orgs.get({org: scope.slug});
 
                 if (ghOrg.data.public_repos > 0) {

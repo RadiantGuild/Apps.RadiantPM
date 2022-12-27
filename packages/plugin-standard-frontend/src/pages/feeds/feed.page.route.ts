@@ -1,1 +1,1 @@
-export default "/feeds/:feedSlug";
+export default "/feeds/@feedSlug";

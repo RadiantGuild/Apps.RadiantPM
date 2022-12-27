@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/plugin-knex-database",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,8 +25,8 @@
   },
   "dependencies": {
     "@radiantpm/log": "workspace:^0.1.0",
-    "@radiantpm/plugin-types": "workspace:^0.1.0",
-    "@radiantpm/plugin-utils": "workspace:^0.1.0",
+    "@radiantpm/plugin-types": "workspace:^0.2.0",
+    "@radiantpm/plugin-utils": "workspace:^0.1.1",
     "better-sqlite3": "^7.5.0",
     "knex": "^1.0.3",
     "mysql2": "^2.3.3",

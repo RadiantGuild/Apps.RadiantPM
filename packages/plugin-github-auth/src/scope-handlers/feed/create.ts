@@ -44,11 +44,16 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
                 };
             }
 
+            const {data: userInfo} = await ctx.gh.users.getAuthenticated();
+
             const {data: userOrgs} =
                 await ctx.gh.orgs.listForAuthenticatedUser();
 
             return {
-                validObjects: userOrgs.map(org => org.login.toLowerCase())
+                validObjects: [
+                    userInfo.login.toLowerCase(),
+                    ...userOrgs.map(org => org.login.toLowerCase())
+                ]
             };
         }
     });

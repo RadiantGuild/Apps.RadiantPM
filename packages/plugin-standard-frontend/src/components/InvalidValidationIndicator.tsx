@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {AiOutlineCloseCircle} from "react-icons/ai";
+import {XCircle} from "react-bootstrap-icons";
 import {styled} from "~/stitches.config";
 
 const Container = styled("div", {
@@ -10,7 +10,7 @@ const Container = styled("div", {
 
 Container.displayName = "Container";
 
-const Indicator = styled(AiOutlineCloseCircle, {
+const Indicator = styled(XCircle, {
     color: "$statusError"
 });
 
