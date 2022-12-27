@@ -4,9 +4,10 @@ import {Parameters} from "../Parameters";
 
 export function register(handler: SwitchedScopeHandler<Parameters>): void {
     handler.register("turborepo-cs:cache.view", {
-        async check({feedSlug, packageSlug}, {accessToken, authPlugin}) {
+        async check({feedSlug}, {accessToken, authPlugin, dbPlugin}) {
+            // TODO: prevent access to private caches by figuring out what package it is for
+
             assert(feedSlug, "missing feedSlug in cache.view scope");
-            assert(packageSlug, "missing packageSlug in cache.view scope");
 
             const feedViewAuthResult = await authPlugin.check(accessToken, {
                 kind: "feed.view",
@@ -15,15 +16,30 @@ export function register(handler: SwitchedScopeHandler<Parameters>): void {
 
             if (!feedViewAuthResult.success) return feedViewAuthResult;
 
-            const packageViewAuthResult = await authPlugin.check(accessToken, {
-                kind: "package.view",
-                slug: packageSlug,
-                feedSlug
-            });
+            const feedId = await dbPlugin.getFeedIdFromSlug(feedSlug);
+            assert(feedId, "feed stopped existing");
 
-            if (!packageViewAuthResult.success) return packageViewAuthResult;
+            const packages = await dbPlugin.listPackagesFromFeed(feedId);
 
-            return {success: true};
+            for (const pkg of packages) {
+                const packageUpdateAuthResult = await authPlugin.check(
+                    accessToken,
+                    {
+                        kind: "package.view",
+                        slug: pkg.slug,
+                        feedSlug
+                    }
+                );
+
+                if (packageUpdateAuthResult.success) {
+                    return packageUpdateAuthResult;
+                }
+            }
+
+            return {
+                success: false,
+                errorMessage: "Missing read access for at least one package"
+            };
         },
         listValid() {
             return Promise.resolve({

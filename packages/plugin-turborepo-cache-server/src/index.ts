@@ -81,23 +81,13 @@ function getTeamSlugFromQuery(req: HttpRequest) {
 }
 
 async function getTeamFromQuery(req: HttpRequest) {
-    const teamId = getTeamSlugFromQuery(req);
-    if (!teamId) return null;
-
-    const [feedSlug, packageSlug] = teamId.split("+", 2);
+    const feedSlug = getTeamSlugFromQuery(req);
+    if (!feedSlug) return null;
 
     const feedId = await dbPlugin.getFeedIdFromSlug(feedSlug);
     if (!feedId) return null;
 
-    const packageId = await dbPlugin.getPackageIdFromSlug(feedId, packageSlug);
-    if (!packageId) return null;
-
-    const [feed, pkg] = await Promise.all([
-        dbPlugin.getFeedFromId(feedId),
-        dbPlugin.getPackageFromId(packageId)
-    ]);
-
-    return {feed, pkg};
+    return await dbPlugin.getFeedFromId(feedId);
 }
 
 async function getRedirectUri(uid: string) {
@@ -208,42 +198,21 @@ const pluginExport: PluginExport<never, false> = {
                             const {success} = await authPlugin.check(
                                 accessToken,
                                 {
-                                    kind: "feed.view",
-                                    slug: feed.slug
+                                    kind: "turborepo-cs:cache.update",
+                                    feedSlug: feed.slug
                                 }
                             );
 
-                            if (!success) return false;
-
-                            const feedId = await dbPlugin.getFeedIdFromSlug(
-                                feed.slug
-                            );
-                            assert(feedId, "missing id for feed");
-
-                            const packages =
-                                await dbPlugin.listPackagesFromFeed(feedId);
-
-                            return await Promise.all(
-                                packages.map(async pkg => {
-                                    const {success} = await authPlugin.check(
-                                        accessToken,
-                                        {
-                                            kind: "package.view",
-                                            slug: pkg.slug,
-                                            feedSlug: feed.slug
-                                        }
-                                    );
-
-                                    if (!success) return false;
-
-                                    return {
-                                        id: `team_${feed.slug}+${pkg.slug}`,
-                                        name: `${feed.name}: ${pkg.name}`
-                                    };
-                                })
-                            ).then(teams => teams.filter(Boolean));
+                            if (success) {
+                                return {
+                                    id: `team_${feed.slug}`,
+                                    name: feed.name
+                                };
+                            } else {
+                                return false;
+                            }
                         })
-                    ).then(teams => teams.filter(Boolean).flat());
+                    ).then(teams => teams.filter(Boolean));
 
                     await setJson(ctx.res, 200, {
                         teams,
@@ -286,9 +255,9 @@ const pluginExport: PluginExport<never, false> = {
 
                     const accessToken = getBearerAccessToken(ctx.req);
 
-                    const team = await getTeamFromQuery(ctx.req);
+                    const feed = await getTeamFromQuery(ctx.req);
 
-                    if (!team) {
+                    if (!feed) {
                         await setError(
                             ctx.res,
                             "Either the team doesn't exist, or you don't have permission to read its cache"
@@ -301,8 +270,7 @@ const pluginExport: PluginExport<never, false> = {
                         accessToken,
                         {
                             kind: "turborepo-cs:cache.update",
-                            feedSlug: team.feed.slug,
-                            packageSlug: team.pkg.slug
+                            feedSlug: feed.slug
                         }
                     );
 
@@ -350,8 +318,7 @@ const pluginExport: PluginExport<never, false> = {
                         accessToken,
                         {
                             kind: "turborepo-cs:cache.view",
-                            feedSlug: team.feed.slug,
-                            packageSlug: team.pkg.slug
+                            feedSlug: team.slug
                         }
                     );
 
@@ -400,6 +367,7 @@ const pluginExport: PluginExport<never, false> = {
                 try {
                     return await switchedScopeHandler.check(scope, {
                         authPlugin,
+                        dbPlugin,
                         accessToken
                     });
                 } catch (err) {
@@ -413,6 +381,7 @@ const pluginExport: PluginExport<never, false> = {
                 try {
                     return await switchedScopeHandler.listValid(scopeKind, {
                         authPlugin,
+                        dbPlugin,
                         accessToken
                     });
                 } catch (err) {
