@@ -11,7 +11,7 @@
     "@radiantpm/plugin-knex-database": "workspace:^0.1.1",
     "@radiantpm/plugin-local-storage": "workspace:^0.1.1",
     "@radiantpm/plugin-npm": "workspace:^0.1.1",
-    "@radiantpm/plugin-standard-frontend": "workspace:^0.1.2",
+    "@radiantpm/plugin-standard-frontend": "workspace:^0.1.3",
     "@radiantpm/plugin-standard-validator": "workspace:^0.1.1",
     "@radiantpm/plugin-s3-storage": "workspace:^0.1.0"
   }

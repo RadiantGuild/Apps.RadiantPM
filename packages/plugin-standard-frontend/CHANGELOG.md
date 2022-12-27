@@ -1,5 +1,11 @@
 # @radiantpm/plugin-standard-frontend
 
+## 0.1.3
+
+### Patch Changes
+
+-   [`a4e0281`](https://github.com/RadiantPM/RadiantPM/commit/a4e028194b1324021cd6773da176bd8c6bd266ec) Thanks [@Alduino](https://github.com/Alduino)! - Fixed many issues caused by upgrading `vite-plugin-ssr`
+
 ## 0.1.2
 
 ### Patch Changes
