@@ -4,9 +4,15 @@ import "./global.css";
 
 import {fillUrl} from "@radiantpm/bfutils";
 import {AssetUrlParams} from "@radiantpm/plugin-types";
-import {ReactElement, ReactNode, StrictMode, useMemo} from "react";
+import {
+    ReactElement,
+    ReactNode,
+    StrictMode,
+    useEffect,
+    useMemo,
+    useState
+} from "react";
 import {Helmet, HelmetProvider} from "react-helmet-async";
-import {useWindowScroll} from "react-use";
 import {NavAccount} from "~/components/NavAccount";
 import useColourModeValue from "~/hooks/useColourModeValue";
 import {
@@ -14,7 +20,7 @@ import {
     PageContextProviderProps,
     usePageContext
 } from "~/renderer/usePageContext";
-import {styled,globalCss} from "~/stitches.config";
+import {globalCss, styled} from "~/stitches.config";
 import darkTheme from "~/themes/dark";
 import lightTheme from "~/themes/light";
 
@@ -23,7 +29,7 @@ const globalStyles = globalCss({
         background: "$selectionBackground",
         color: "currentColor"
     }
-})
+});
 
 const Layout = styled("div", {
     minHeight: "100vh",
@@ -102,6 +108,8 @@ function PageLayout({children}: PageLayoutProps): ReactElement {
         config.favicon.dark
     );
 
+    const [isWindowScrolled, setWindowScrolled] = useState(false);
+
     const favicon = useMemo(
         () =>
             fillUrl<AssetUrlParams>(staticStorage.assetUrl, {
@@ -125,7 +133,16 @@ function PageLayout({children}: PageLayoutProps): ReactElement {
         [staticStorage, logoTextName]
     );
 
-    const {y: scroll} = useWindowScroll();
+    useEffect(() => {
+        function handleScroll() {
+            setWindowScrolled(window.scrollY > 0);
+        }
+
+        handleScroll();
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    });
 
     globalStyles();
 
@@ -134,7 +151,7 @@ function PageLayout({children}: PageLayoutProps): ReactElement {
             <Helmet>
                 <link rel="icon" href={favicon} />
             </Helmet>
-            <NavigationContainer scrolled={scroll > 0}>
+            <NavigationContainer scrolled={isWindowScrolled}>
                 <Navigation>
                     <LogoLink href="/">
                         <Logo alt="Logo" src={logoText} />

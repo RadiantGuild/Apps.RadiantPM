@@ -18,10 +18,9 @@ import {
 } from "@radiantpm/plugin-types";
 import {createRouteMiddlewarePlugin} from "@radiantpm/plugin-utils";
 import serveStatic from "@radiantpm/serve-static";
-import type {ViteDevServer} from "vite";
-import {createPageRenderer} from "vite-plugin-ssr";
-import {PageContext} from "~/renderer/types";
+import {renderPage} from "vite-plugin-ssr";
 import {Configuration} from "~/types/Configuration";
+import {PageContext} from "~/renderer/types";
 import {onlyKeys} from "~/utils/onlyKeys";
 
 const logger = createLogger("plugin-standard-frontend");
@@ -140,15 +139,11 @@ const pluginExport: PluginExport<Configuration, true> = {
 
     async init(config: Configuration): Promise<MiddlewarePlugin[]> {
         const plugins: MiddlewarePlugin[] = [];
-        let viteDevServer: ViteDevServer | undefined;
 
         const clientRoot =
             process.env.NODE_ENV === "production"
                 ? join(root, "dist", "client")
                 : join(root, "src");
-
-        const serverRoot =
-            process.env.NODE_ENV === "production" ? root : join(root, "src");
 
         if (process.env.NODE_ENV === "production") {
             logger.info(
@@ -181,8 +176,6 @@ const pluginExport: PluginExport<Configuration, true> = {
                 server: {middlewareMode: true}
             });
 
-            viteDevServer = vds;
-
             logger.debug("Initialised Vite dev server");
 
             plugins.push({
@@ -200,19 +193,13 @@ const pluginExport: PluginExport<Configuration, true> = {
             });
         }
 
-        const renderPage = createPageRenderer({
-            viteDevServer,
-            isProduction: process.env.NODE_ENV === "production",
-            root: serverRoot
-        });
-
         plugins.push(
             {
                 type: "middleware",
                 name: "vite-plugin-ssr",
                 shouldHandle,
                 async handle(ctx, next) {
-                    const pageContext: Omit<
+                    const pageContextInit: Omit<
                         PageContext,
                         | "Page"
                         | "pageProps"
@@ -220,8 +207,8 @@ const pluginExport: PluginExport<Configuration, true> = {
                         | "helmetContext"
                         | "routeParams"
                         | "navigate"
-                    > & {url: string} = {
-                        url: ctx.req.url.pathname,
+                    > & {urlOriginal: string} = {
+                        urlOriginal: ctx.req.url.pathname,
                         config: onlyKeys(config, [
                             "favicon",
                             "logo",
@@ -247,29 +234,19 @@ const pluginExport: PluginExport<Configuration, true> = {
                         httpRequest: ctx.req
                     };
 
-                    const {httpResponse, errorWhileRendering} =
-                        await renderPage(pageContext);
+                    const {httpResponse} = await renderPage(pageContextInit);
 
-                    if (errorWhileRendering) {
-                        throw errorWhileRendering;
-                    }
-
-                    if (httpResponse) {
-                        const {statusCode, contentType} = httpResponse;
-
-                        const bodyNodeStream =
-                            await httpResponse.getNodeStream();
-
-                        ctx.res.headers.set("content-type", contentType);
-                        const body = await ctx.res.flushHeaders(statusCode);
-                        bodyNodeStream.pipe(body.body);
-                        await new Promise<void>(yay =>
-                            bodyNodeStream.on("close", yay)
-                        );
-                        await body.flushBody();
-                    } else {
+                    if (!httpResponse) {
                         await next();
+                        return;
                     }
+
+                    const {statusCode, contentType} = httpResponse;
+
+                    ctx.res.headers.set("content-type", contentType);
+
+                    const body = await ctx.res.flushHeaders(statusCode);
+                    httpResponse.pipe(body.body);
                 }
             },
             createRouteMiddlewarePlugin("GET /favicon.ico", async ctx => {
