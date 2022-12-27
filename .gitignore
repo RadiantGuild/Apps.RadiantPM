@@ -5,3 +5,4 @@ out
 .npmrc
 *.log
 *.local
+.turbo
