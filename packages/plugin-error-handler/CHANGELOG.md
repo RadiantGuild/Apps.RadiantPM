@@ -1,5 +1,14 @@
 # @radiantpm/plugin-error-handler
 
+## 0.1.2-test.0
+
+### Patch Changes
+
+-   Updated dependencies []:
+    -   @radiantpm/plugin-types@0.3.0-test.0
+    -   @radiantpm/plugin-utils@0.2.0-test.0
+    -   @radiantpm/backend-utilities@0.1.2-test.0
+
 ## 0.1.1
 
 ### Patch Changes

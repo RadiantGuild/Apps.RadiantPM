@@ -1,5 +1,17 @@
 # @radiantpm/plugin-github-auth
 
+## 0.3.0-test.0
+
+### Minor Changes
+
+-   Added a method to authentication plugins to load basic information about a user.
+
+### Patch Changes
+
+-   Updated dependencies []:
+    -   @radiantpm/plugin-types@0.3.0-test.0
+    -   @radiantpm/plugin-utils@0.2.0-test.0
+
 ## 0.2.0
 
 ### Minor Changes

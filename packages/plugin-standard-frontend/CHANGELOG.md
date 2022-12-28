@@ -1,5 +1,25 @@
 # @radiantpm/plugin-standard-frontend
 
+## 0.2.0-test.0
+
+### Minor Changes
+
+-   Added a new well-known route that redirects to the login page, at `/.well-known/rpm-login`. Any search parameters that are set will also be included in the redirect URL.
+
+-   Added a new well-known route that redirects to a page that states that authentication was successful. All query parameters are kept in the redirect.
+
+-   Added support for logging into external applications. This involves setting a return URL and an app name as query parameters when redirecting to the login page. If these are set, logging in will ask the user to confirm that they want to give access to the specified application.
+
+### Patch Changes
+
+-   Updated dependencies []:
+    -   @radiantpm/plugin-types@0.3.0-test.0
+    -   @radiantpm/plugin-utils@0.2.0-test.0
+    -   @radiantpm/frontend-utilities@0.1.2-test.0
+    -   @radiantpm/plugin-error-handler@0.1.2-test.0
+    -   @radiantpm/serve-static@0.1.2-test.0
+    -   @radiantpm/bfutils@0.1.1-test.0
+
 ## 0.1.3
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/plugin-api-frontend",
-  "version": "0.1.1",
+  "version": "0.1.2-test.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -17,10 +17,10 @@
     "typescript": "^4.6"
   },
   "dependencies": {
-    "@radiantpm/frontend-utilities": "workspace:^0.1.1",
-    "@radiantpm/plugin-error-handler": "workspace:^0.1.1",
-    "@radiantpm/plugin-types": "workspace:^0.2.0",
-    "@radiantpm/plugin-utils": "workspace:^0.1.1",
+    "@radiantpm/frontend-utilities": "workspace:^0.1.2-test.0",
+    "@radiantpm/plugin-error-handler": "workspace:^0.1.2-test.0",
+    "@radiantpm/plugin-types": "workspace:^0.3.0-test.0",
+    "@radiantpm/plugin-utils": "workspace:^0.2.0-test.0",
     "url-join": "^4.0.1"
   }
 }

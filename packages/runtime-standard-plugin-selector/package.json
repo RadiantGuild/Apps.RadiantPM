@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/runtime-standard-plugin-selector",
-  "version": "0.2.1",
+  "version": "0.2.2-test.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

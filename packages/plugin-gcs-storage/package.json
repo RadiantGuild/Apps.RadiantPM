@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/plugin-gcs-storage",
-  "version": "0.1.1",
+  "version": "0.1.2-test.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^6.1.0",
-    "@radiantpm/plugin-error-handler": "workspace:^0.1.1",
-    "@radiantpm/plugin-types": "workspace:^0.2.0",
-    "@radiantpm/plugin-utils": "workspace:^0.1.1",
+    "@radiantpm/plugin-error-handler": "workspace:^0.1.2-test.0",
+    "@radiantpm/plugin-types": "workspace:^0.3.0-test.0",
+    "@radiantpm/plugin-utils": "workspace:^0.2.0-test.0",
     "hasha": "^5.2.2",
     "url-join": "^4.0.1"
   },

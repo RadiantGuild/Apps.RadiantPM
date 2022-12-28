@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/plugin-github-auth",
-  "version": "0.2.0",
+  "version": "0.3.0-test.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,8 +27,8 @@
   "dependencies": {
     "@octokit/rest": "^18.12.0",
     "@radiantpm/log": "workspace:^0.1.0",
-    "@radiantpm/plugin-types": "workspace:^0.2.0",
-    "@radiantpm/plugin-utils": "workspace:^0.1.1",
+    "@radiantpm/plugin-types": "workspace:^0.3.0-test.0",
+    "@radiantpm/plugin-utils": "workspace:^0.2.0-test.0",
     "cryptr": "^6.0.3",
     "hasha": "^5.2.2",
     "object-hash": "^3.0.0",

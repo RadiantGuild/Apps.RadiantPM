@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/serve-static",
-  "version": "0.1.1",
+  "version": "0.1.2-test.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@radiantpm/log": "workspace:^0.1.0",
-    "@radiantpm/plugin-error-handler": "workspace:^0.1.1",
-    "@radiantpm/plugin-types": "workspace:^0.2.0",
+    "@radiantpm/plugin-error-handler": "workspace:^0.1.2-test.0",
+    "@radiantpm/plugin-types": "workspace:^0.3.0-test.0",
     "file-type": "^17.0.0",
     "mime-types": "^2.1.34"
   },

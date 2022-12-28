@@ -1,5 +1,26 @@
 # @radiantpm/plugin-utils
 
+## 0.2.0-test.0
+
+### Minor Changes
+
+-   Added a method to authentication plugins to load basic information about a user.
+
+-   Added support for extensions to authentication plugins. Extensions allow plugins to register custom scopes that extend the built-in scopes.
+
+-   Added a new request utility function (`redirect`) that sets the appropriate values on a `HeadersHttpResponse` to redirect the user.
+
+-   Added a new request utility function `getBuffer` to read a buffer from a `HttpRequest`.
+
+-   Added a utility `createRequestLogger` to create a middleware plugin that logs every request. It's main purpose is to help with reverse engineering API clients to figure out what routes you need to handle.
+
+### Patch Changes
+
+-   Fixed a bug that caused accept header parsing to crash in some situations.
+
+-   Updated dependencies []:
+    -   @radiantpm/plugin-types@0.3.0-test.0
+
 ## 0.1.1
 
 ### Patch Changes

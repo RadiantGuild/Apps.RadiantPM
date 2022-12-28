@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/plugin-file-cache",
-  "version": "0.1.0",
+  "version": "0.1.1-test.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@radiantpm/log": "workspace:^0.1.0",
-    "@radiantpm/plugin-types": "workspace:^0.2.0",
-    "@radiantpm/plugin-utils": "workspace:^0.1.1"
+    "@radiantpm/plugin-types": "workspace:^0.3.0-test.0",
+    "@radiantpm/plugin-utils": "workspace:^0.2.0-test.0"
   },
   "peerDependencies": {
     "pino": "^7"

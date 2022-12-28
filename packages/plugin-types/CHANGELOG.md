@@ -1,5 +1,13 @@
 # @radiantpm/plugin-types
 
+## 0.3.0-test.0
+
+### Minor Changes
+
+-   Added a method to authentication plugins to load basic information about a user.
+
+-   Added support for extensions to authentication plugins. Extensions allow plugins to register custom scopes that extend the built-in scopes.
+
 ## 0.2.1
 
 ### Patch Changes

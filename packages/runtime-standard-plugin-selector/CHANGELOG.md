@@ -1,5 +1,13 @@
 # @radiantpm/runtime-standard-plugin-selector
 
+## 0.2.2-test.0
+
+### Patch Changes
+
+-   Updated dependencies []:
+    -   @radiantpm/plugin-types@0.3.0-test.0
+    -   @radiantpm/runtime-bootstrap@0.2.1-test.0
+
 ## 0.2.1
 
 ### Patch Changes

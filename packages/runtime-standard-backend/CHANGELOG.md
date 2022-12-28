@@ -1,5 +1,14 @@
 # @radiantpm/runtime-standard-backend
 
+## 0.1.3-test.0
+
+### Patch Changes
+
+-   Updated dependencies []:
+    -   @radiantpm/plugin-types@0.3.0-test.0
+    -   @radiantpm/backend-utilities@0.1.2-test.0
+    -   @radiantpm/runtime-bootstrap@0.2.1-test.0
+
 ## 0.1.2
 
 ### Patch Changes
