@@ -235,7 +235,11 @@ const pluginExport: PluginExport<Configuration, true> = {
                         httpRequest: ctx.req
                     };
 
-                    const {httpResponse} = await renderPage(pageContextInit);
+                    const {httpResponse, errorWhileRendering} = await renderPage(pageContextInit);
+
+                    if (errorWhileRendering) {
+                        throw errorWhileRendering;
+                    }
 
                     if (!httpResponse) {
                         await next();
