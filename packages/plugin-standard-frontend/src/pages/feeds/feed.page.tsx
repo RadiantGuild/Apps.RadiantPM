@@ -1,8 +1,8 @@
 import type {Feed, SimplePackage} from "@radiantpm/plugin-types";
 import {ReactElement} from "react";
-import ReactTimeago from "react-timeago";
 import {DetailedLink, Details} from "~/components/DetailedLink";
 import {Link} from "~/components/Link";
+import {RelativeTime} from "~/components/RelativeTime";
 import {SeparatedTextList} from "~/components/SeparatedTextList";
 import {Heading, Label} from "~/components/text";
 import {Code} from "~/components/text/Code";
@@ -59,8 +59,8 @@ export function Page({feed, packages}: FeedPageProps): ReactElement {
                                         {pkg.lastUpdated && (
                                             <span>
                                                 Last updated{" "}
-                                                <ReactTimeago
-                                                    date={pkg.lastUpdated}
+                                                <RelativeTime
+                                                    time={pkg.lastUpdated}
                                                 />
                                             </span>
                                         )}
