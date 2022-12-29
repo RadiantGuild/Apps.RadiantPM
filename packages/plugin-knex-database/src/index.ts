@@ -92,45 +92,50 @@ function createPlugin(db: Knex) {
         ): Promise<readonly SimplePackage[]> {
             queryLogger.trace("Listing packages from feed %s", feedId);
 
-            const result = (await db("packages")
-                .leftJoin("versions", "packages.id", "=", "versions.package_id")
-                .leftJoin(
-                    "package_tags",
-                    "packages.id",
-                    "=",
-                    "package_tags.package_id"
+            const result = await db
+                .with(
+                    "max_creation_dates",
+                    db
+                        .select(
+                            {package_id: "v1.package_id"},
+                            {latest_version_id: "v2.id"}
+                        )
+                        .max({max_creation_date: "v1.creation_date"})
+                        .from("versions as v1")
+                        .innerJoin("versions as v2", function () {
+                            this.on("v1.package_id", "v2.package_id").andOn(
+                                "v1.creation_date",
+                                "v2.creation_date"
+                            );
+                        })
+                        .groupBy("v1.package_id")
                 )
-                // TODO: Figure out why `as never` is required
-                .where({
-                    "package_tags.tag": LATEST_TAG,
-                    "packages.feed_id": feedId
-                } as never)
-                .orWhere({
-                    "package_tags.tag": null,
-                    "packages.feed_id": feedId
-                } as never)
-                .groupBy("packages.id")
                 .select({
-                    package_slug: "packages.slug",
-                    package_name: "packages.name",
-                    package_type: "packages.type",
-                    package_description: "packages.description",
-                    latest_version_id: "package_tags.version_id"
+                    package_slug: "p.slug",
+                    package_name: "p.name",
+                    package_type: "p.type",
+                    package_description: "p.description",
+                    latest_version_id: db.raw(
+                        "coalesce((select version_id from package_tags where package_id = p.id and tag = ?), md.latest_version_id)",
+                        [LATEST_TAG]
+                    ),
+                    last_updated: "md.max_creation_date",
+                    versions_count: db.count("v.id")
                 })
-                .max({
-                    last_updated: "versions.creation_date"
-                })
-                .count({
-                    versions_count: "versions.id"
-                })) as {
-                package_slug: string;
-                package_name: string;
-                package_type: string;
-                package_description: string;
-                versions_count: number;
-                latest_version_id: string;
-                last_updated: number;
-            }[];
+                .from("packages as p")
+                .leftJoin("versions as v", "p.id", "v.package_id")
+                .leftJoin("max_creation_dates as md", "p.id", "md.package_id")
+                .where("p.feed_id", feedId)
+                .groupBy("p.id", "md.max_creation_date")
+                .returning([
+                    "package_slug",
+                    "package_name",
+                    "package_type",
+                    "package_description",
+                    "latest_version_id",
+                    "last_updated",
+                    "versions_count"
+                ]);
 
             return result.map(item => ({
                 slug: item.package_slug,
