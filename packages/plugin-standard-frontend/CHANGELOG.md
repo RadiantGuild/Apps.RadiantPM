@@ -1,5 +1,13 @@
 # @radiantpm/plugin-standard-frontend
 
+## 0.2.0-test.1
+
+### Patch Changes
+
+-   [`0690518`](https://github.com/RadiantPM/RadiantPM/commit/0690518d3476bb899c2b9d635fda08012240d3d4) Thanks [@Alduino](https://github.com/Alduino)! - Fixed an issue where server errors would show as a 404 Not Found page.
+
+-   [`5c1283b`](https://github.com/RadiantPM/RadiantPM/commit/5c1283b23473a40a1514fc696fa118329e54a396) Thanks [@Alduino](https://github.com/Alduino)! - Switched to custom relative time implementation to fix issues with CommonJS interop.
+
 ## 0.2.0-test.0
 
 ### Minor Changes

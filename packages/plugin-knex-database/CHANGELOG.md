@@ -1,5 +1,11 @@
 # @radiantpm/plugin-knex-database
 
+## 0.1.2-test.1
+
+### Patch Changes
+
+-   [`0690518`](https://github.com/RadiantPM/RadiantPM/commit/0690518d3476bb899c2b9d635fda08012240d3d4) Thanks [@Alduino](https://github.com/Alduino)! - Fixed an issue with the package list query in Postgres.
+
 ## 0.1.2-test.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@radiantpm/plugin-standard-frontend",
-  "version": "0.2.0-test.0",
+  "version": "0.2.0-test.1",
   "type": "module",
   "main": "./dist/server.js",
   "types": "./dist/server.d.ts",
