@@ -1,5 +1,11 @@
 # @radiantpm/plugin-knex-database
 
+## 0.1.2-test.2
+
+### Patch Changes
+
+-   [`1b131c4`](https://github.com/RadiantPM/RadiantPM/commit/1b131c413f0e216774eacf96fd2265bcebb7129d) Thanks [@Alduino](https://github.com/Alduino)! - Fixed another issue with the feed packages list query.
+
 ## 0.1.2-test.1
 
 ### Patch Changes
