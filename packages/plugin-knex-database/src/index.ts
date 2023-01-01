@@ -130,7 +130,7 @@ function createPlugin(db: Knex) {
                         ))`,
                         [LATEST_TAG]
                     ),
-                    last_updated: "plu.last_updated",
+                    last_updated: db.max("plu.last_updated"),
                     versions_count: db.count("v.id")
                 })
                 .from("packages as p")
