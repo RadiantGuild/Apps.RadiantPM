@@ -123,7 +123,11 @@ function createPlugin(db: Knex) {
                     package_type: "p.type",
                     package_description: "p.description",
                     latest_version_id: db.raw(
-                        "coalesce((select version_id from package_tags where package_id = p.id and tag = ?), lv.version_id)",
+                        `coalesce((
+                            select version_id from package_tags where package_id = p.id and tag = ? limit 1
+                        ), (
+                            select version_id from latest_versions where package_id = p.id limit 1
+                        ))`,
                         [LATEST_TAG]
                     ),
                     last_updated: "plu.last_updated",
@@ -136,7 +140,6 @@ function createPlugin(db: Knex) {
                     "p.id",
                     "plu.package_id"
                 )
-                .leftJoin("latest_versions as lv", "p.id", "lv.package_id")
                 .where("p.feed_id", feedId)
                 .groupBy("p.id");
 
