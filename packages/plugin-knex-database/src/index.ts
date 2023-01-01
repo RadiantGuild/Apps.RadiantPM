@@ -94,21 +94,28 @@ function createPlugin(db: Knex) {
 
             const result = await db
                 .with(
-                    "max_creation_dates",
+                    "packages_last_updated",
                     db
-                        .select(
-                            {package_id: "v1.package_id"},
-                            {latest_version_id: "v2.id"}
-                        )
-                        .max({max_creation_date: "v1.creation_date"})
-                        .from("versions as v1")
-                        .innerJoin("versions as v2", function () {
-                            this.on("v1.package_id", "v2.package_id").andOn(
-                                "v1.creation_date",
-                                "v2.creation_date"
-                            );
+                        .select({
+                            package_id: "v.package_id",
+                            last_updated: db.max("v.creation_date")
                         })
-                        .groupBy("v1.package_id")
+                        .from("versions as v")
+                        .groupBy("v.package_id")
+                )
+                .with(
+                    "latest_versions",
+                    db
+                        .select({
+                            package_id: "v.package_id",
+                            version_id: "v.id"
+                        })
+                        .from("packages_last_updated as plu")
+                        .leftJoin("versions as v", join =>
+                            join
+                                .on("plu.package_id", "v.package_id")
+                                .andOn("plu.last_updated", "v.creation_date")
+                        )
                 )
                 .select({
                     package_slug: "p.slug",
@@ -116,26 +123,22 @@ function createPlugin(db: Knex) {
                     package_type: "p.type",
                     package_description: "p.description",
                     latest_version_id: db.raw(
-                        "coalesce((select version_id from package_tags where package_id = p.id and tag = ?), md.latest_version_id)",
+                        "coalesce((select version_id from package_tags where package_id = p.id and tag = ?), lv.version_id)",
                         [LATEST_TAG]
                     ),
-                    last_updated: "md.max_creation_date",
+                    last_updated: "plu.last_updated",
                     versions_count: db.count("v.id")
                 })
                 .from("packages as p")
                 .leftJoin("versions as v", "p.id", "v.package_id")
-                .leftJoin("max_creation_dates as md", "p.id", "md.package_id")
+                .leftJoin(
+                    "packages_last_updated as plu",
+                    "p.id",
+                    "plu.package_id"
+                )
+                .leftJoin("latest_versions as lv", "p.id", "lv.package_id")
                 .where("p.feed_id", feedId)
-                .groupBy("p.id", "md.max_creation_date")
-                .returning([
-                    "package_slug",
-                    "package_name",
-                    "package_type",
-                    "package_description",
-                    "latest_version_id",
-                    "last_updated",
-                    "versions_count"
-                ]);
+                .groupBy("p.id");
 
             return result.map(item => ({
                 slug: item.package_slug,
