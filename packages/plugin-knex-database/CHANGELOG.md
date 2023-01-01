@@ -1,5 +1,11 @@
 # @radiantpm/plugin-knex-database
 
+## 0.1.2-test.4
+
+### Patch Changes
+
+-   [`d857381`](https://github.com/RadiantPM/RadiantPM/commit/d857381c7e18ff3f0f3a3736a78e6d252d0187dd) Thanks [@Alduino](https://github.com/Alduino)! - Added another fix for more Postgres database issues
+
 ## 0.1.2-test.3
 
 ### Patch Changes
