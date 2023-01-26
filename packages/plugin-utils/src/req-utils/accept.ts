@@ -1,9 +1,12 @@
 import assert from "assert";
+import {createLogger} from "@radiantpm/log";
 import {
     HeadersHttpResponse,
     HttpRequest,
     ReadonlyHeaders
 } from "@radiantpm/plugin-types";
+
+const logger = createLogger("plugin-utils:req-utils:accept");
 
 interface Item {
     type: string;
@@ -103,9 +106,18 @@ export class Accept {
 function getAcceptHeader(
     src: ReadonlyHeaders | HttpRequest | HeadersHttpResponse | string
 ): string {
-    if (typeof src === "string") return src;
-    if (src instanceof ReadonlyHeaders) return src.getAll("accept").join(",");
-    return getAcceptHeader(src.headers);
+    if (typeof src === "string") {
+        return src;
+    }
+    else if (src instanceof ReadonlyHeaders) {
+        return src.getAll("accept").join(",");
+    }
+    else if (src?.headers) {
+        return getAcceptHeader(src.headers);
+    } else {
+        logger.warn({src}, "Invalid parameter accept header source");
+        return "";
+    }
 }
 
 export interface AcceptFn {
